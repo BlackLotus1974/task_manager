@@ -2,7 +2,6 @@
 
 import { createTask, updateTask, deleteTask, getTaskById } from "@/lib/database/tasks";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function createTaskAction(formData: {
   title: string;

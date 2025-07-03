@@ -8,9 +8,8 @@ import { Plus, FolderOpen, Users } from "lucide-react";
 import Link from "next/link";
 
 async function ProjectsContent() {
-  const [projects, user] = await Promise.all([
+  const [projects] = await Promise.all([
     getProjects(),
-    getCurrentUser()
   ]);
 
   return (

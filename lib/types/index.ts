@@ -108,7 +108,7 @@ export interface ActivityLog {
   entity_type: string;
   entity_id: string;
   user_id: string;
-  changes?: Record<string, any>;
+  changes?: Record<string, unknown>;
   created_at: string;
   user?: User;
 }

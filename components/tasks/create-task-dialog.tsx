@@ -13,14 +13,12 @@ interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projects: Project[];
-  users: User[];
 }
 
 export function CreateTaskDialog({
   open,
   onOpenChange,
   projects,
-  users,
 }: CreateTaskDialogProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Task, Project, User, STATUS_LABELS } from "@/lib/types";
+import { Task, Project, User } from "@/lib/types";
 import { TaskCard } from "./task-card";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 

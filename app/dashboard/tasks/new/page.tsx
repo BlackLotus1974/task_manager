@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { getProjects } from "@/lib/database/projects";
 import { getAllUsers } from "@/lib/database/users";
 import { CreateTaskForm } from "@/components/tasks/create-task-form";

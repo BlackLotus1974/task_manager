@@ -17,10 +17,9 @@ import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/types";
 import Link from "next/link";
 
 async function DashboardStats() {
-  const [user, tasksResult, projects] = await Promise.all([
+  const [user, tasksResult] = await Promise.all([
     getCurrentUser(),
     getTasks(),
-    getProjects()
   ]);
 
   const { tasks } = tasksResult;
@@ -52,7 +51,7 @@ async function DashboardStats() {
           Welcome back, {user?.full_name || 'User'}!
         </h2>
         <p className="text-muted-foreground">
-          Here's what's happening with your tasks today.
+          Here&apos;s what&apos;s happening with your tasks today.
         </p>
       </div>
 

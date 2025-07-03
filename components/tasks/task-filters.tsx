@@ -9,11 +9,10 @@ import { Project, User, TaskFilters as TaskFiltersType } from "@/lib/types";
 
 interface TaskFiltersProps {
   projects: Project[];
-  users: User[];
   currentFilters: Partial<TaskFiltersType>;
 }
 
-export function TaskFilters({ projects, users, currentFilters }: TaskFiltersProps) {
+export function TaskFilters({ projects, currentFilters }: TaskFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

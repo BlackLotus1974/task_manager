@@ -55,7 +55,7 @@ export async function createProject(projectData: CreateProjectData): Promise<Pro
   }
   
   // Create the project
-  const { data: project, error: projectError } = await supabase
+  const { data: newProject, error: projectError } = await supabase
     .from('projects')
     .insert({
       name: projectData.name,
@@ -71,9 +71,9 @@ export async function createProject(projectData: CreateProjectData): Promise<Pro
   }
   
   // Add project members (including creator as admin)
-  const members = [
+  const members: { project_id: string; user_id: string; role: 'admin' | 'member' }[] = [
     {
-      project_id: project.id,
+      project_id: newProject.id,
       user_id: user.id,
       role: 'admin' as const
     }
@@ -81,11 +81,13 @@ export async function createProject(projectData: CreateProjectData): Promise<Pro
   
   // Add additional members if provided
   if (projectData.member_ids) {
-    members.push(...projectData.member_ids.map(userId => ({
-      project_id: project.id,
-      user_id: userId,
-      role: 'member' as const
-    })));
+    projectData.member_ids.forEach(userId => {
+      members.push({
+        project_id: newProject.id,
+        user_id: userId,
+        role: 'member' as const
+      });
+    });
   }
   
   const { error: membersError } = await supabase
@@ -97,12 +99,12 @@ export async function createProject(projectData: CreateProjectData): Promise<Pro
   }
   
   // Log activity
-  await logActivity('created', 'project', project.id, user.id, {
+  await logActivity('created', 'project', newProject.id, user.id, {
     name: projectData.name
   });
   
   // Return the complete project with members
-  const createdProject = await getProjectById(project.id);
+  const createdProject = await getProjectById(newProject.id);
   if (!createdProject) {
     throw new Error('Failed to retrieve created project');
   }
@@ -124,13 +126,14 @@ export async function updateProject(id: string, updates: UpdateProjectData): Pro
     throw new Error('Project not found');
   }
   
-  // Update the project
-  const { data: project, error: projectError } = await supabase
+  // Update the project details
+  const { name, description, color, member_ids } = updates;
+  const { error: projectError } = await supabase
     .from('projects')
     .update({
-      name: updates.name,
-      description: updates.description,
-      color: updates.color,
+      name,
+      description,
+      color,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
@@ -142,39 +145,36 @@ export async function updateProject(id: string, updates: UpdateProjectData): Pro
   }
   
   // Update project members if provided
-  if (updates.member_ids !== undefined) {
-    // Remove existing members (except creator/admin)
-    await supabase
-      .from('project_members')
-      .delete()
-      .eq('project_id', id)
-      .neq('role', 'admin');
+  if (member_ids !== undefined) {
+    const existingMemberIds = currentProject.members?.map(m => m.user?.id).filter(Boolean) as string[] || [];
+    const adminUser = currentProject.members?.find(m => m.role === 'admin')?.user;
+    const adminId = adminUser?.id;
     
-    // Add new members
-    if (updates.member_ids.length > 0) {
-      const members = updates.member_ids.map(userId => ({
-        project_id: id,
-        user_id: userId,
-        role: 'member' as const
-      }));
+    // Members to add
+    const toAdd = member_ids
+      .filter(id => !existingMemberIds.includes(id))
+      .map(userId => ({ project_id: id, user_id: userId, role: 'member' as const }));
       
-      const { error: membersError } = await supabase
-        .from('project_members')
-        .insert(members);
-        
-      if (membersError) {
-        throw new Error(`Failed to update project members: ${membersError.message}`);
-      }
+    // Members to remove
+    const toRemove = existingMemberIds.filter(id => 
+      !member_ids.includes(id) && id !== adminId
+    );
+    
+    if (toAdd.length > 0) {
+      await supabase.from('project_members').insert(toAdd);
+    }
+    if (toRemove.length > 0) {
+      await supabase.from('project_members').delete().in('user_id', toRemove).eq('project_id', id);
     }
   }
   
   // Log activity with changes
-  const changes: Record<string, any> = {};
-  Object.keys(updates).forEach(key => {
-    const currentValue = (currentProject as any)[key];
-    const newValue = (updates as any)[key];
-    if (currentValue !== newValue) {
-      changes[key] = { from: currentValue, to: newValue };
+  const changes: Record<string, { from: unknown; to: unknown }> = {};
+  const comparableUpdates = { name, description, color };
+
+  (Object.keys(comparableUpdates) as Array<keyof typeof comparableUpdates>).forEach(key => {
+    if (currentProject[key] !== comparableUpdates[key] && comparableUpdates[key] !== undefined) {
+      changes[key] = { from: currentProject[key], to: comparableUpdates[key] };
     }
   });
   
@@ -301,7 +301,7 @@ async function logActivity(
   entityType: string,
   entityId: string,
   userId: string,
-  changes?: Record<string, any>
+  changes?: Record<string, unknown>
 ): Promise<void> {
   const supabase = await createClient();
   

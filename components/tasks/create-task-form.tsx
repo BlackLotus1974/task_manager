@@ -14,10 +14,9 @@ import { createTaskAction } from "@/lib/actions/tasks";
 
 interface CreateTaskFormProps {
   projects: Project[];
-  users: User[];
 }
 
-export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
+export function CreateTaskForm({ projects }: CreateTaskFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");

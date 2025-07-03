@@ -43,7 +43,7 @@ async function TasksContent({ searchParams }: TasksPageProps) {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Tasks</h2>
           <p className="text-muted-foreground">
-            Manage and track your team's tasks
+            Manage and track your team&apos;s tasks
           </p>
         </div>
         <div className="flex items-center space-x-2">

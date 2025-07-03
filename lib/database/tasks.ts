@@ -329,10 +329,14 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
   }
   
   // Log activity with changes
-  const changes: Record<string, any> = {};
-  Object.keys(updates).forEach(key => {
-    const currentValue = (currentTask as any)[key];
-    const newValue = (updates as any)[key];
+  const changes: Record<string, { from: unknown; to: unknown }> = {};
+  (Object.keys(updates) as Array<keyof UpdateTaskData>).forEach(key => {
+    // We can't compare assignee_ids and tag_ids directly
+    if (key === 'assignee_ids' || key === 'tag_ids') return;
+
+    const currentValue = currentTask[key as keyof Omit<UpdateTaskData, 'assignee_ids' | 'tag_ids'>];
+    const newValue = updates[key as keyof Omit<UpdateTaskData, 'assignee_ids' | 'tag_ids'>];
+
     if (currentValue !== newValue) {
       changes[key] = { from: currentValue, to: newValue };
     }
@@ -421,17 +425,18 @@ async function logActivity(
   entityType: string,
   entityId: string,
   userId: string,
-  changes?: Record<string, any>
+  changes?: Record<string, unknown>
 ): Promise<void> {
   const supabase = await createClient();
+  const { error } = await supabase.from("activity_log").insert({
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    user_id: userId,
+    changes
+  });
   
-  await supabase
-    .from('activity_log')
-    .insert({
-      action,
-      entity_type: entityType,
-      entity_id: entityId,
-      user_id: userId,
-      changes
-    });
+  if (error) {
+    throw new Error(`Failed to log activity: ${error.message}`);
+  }
 } 
