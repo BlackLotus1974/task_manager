@@ -9,18 +9,29 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log("🔍 DashboardLayout: Starting authentication check");
+  
   const supabase = await createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
   
+  console.log("🔍 DashboardLayout: Auth user:", authUser ? `${authUser.email} (${authUser.id})` : "null");
+  
   if (!authUser) {
+    console.log("❌ DashboardLayout: No auth user, redirecting to login");
     redirect("/auth/login");
   }
 
+  console.log("🔍 DashboardLayout: Getting user profile from database");
   const user = await getCurrentUser();
   
+  console.log("🔍 DashboardLayout: User profile:", user ? `${user.email} (${user.id})` : "null");
+  
   if (!user) {
+    console.log("❌ DashboardLayout: No user profile found, redirecting to login");
     redirect("/auth/login");
   }
+
+  console.log("✅ DashboardLayout: Authentication successful, rendering dashboard");
 
   return (
     <div className="min-h-screen bg-background">

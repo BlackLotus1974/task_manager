@@ -2,12 +2,19 @@ import { createClient } from '@/lib/supabase/server';
 import { User } from '@/lib/types';
 
 export async function getCurrentUser(): Promise<User | null> {
+  console.log("🔍 getCurrentUser: Starting");
+  
   const supabase = await createClient();
   
   const { data: { user: authUser } } = await supabase.auth.getUser();
+  console.log("🔍 getCurrentUser: Auth user:", authUser ? `${authUser.email} (${authUser.id})` : "null");
+  
   if (!authUser) {
+    console.log("❌ getCurrentUser: No auth user found");
     return null;
   }
+  
+  console.log("🔍 getCurrentUser: Querying users table for user:", authUser.id);
   
   const { data, error } = await supabase
     .from('users')
@@ -15,14 +22,19 @@ export async function getCurrentUser(): Promise<User | null> {
     .eq('id', authUser.id)
     .single();
     
+  console.log("🔍 getCurrentUser: Database query result:", { data, error });
+    
   if (error) {
+    console.log("🔍 getCurrentUser: Database error:", error);
     if (error.code === 'PGRST116') {
       // User profile doesn't exist yet, create it
+      console.log("🔍 getCurrentUser: User profile doesn't exist, creating it");
       return await createUserProfile(authUser.id, authUser.email!, authUser.user_metadata?.full_name);
     }
     throw new Error(`Failed to fetch user profile: ${error.message}`);
   }
   
+  console.log("✅ getCurrentUser: Successfully found user profile");
   return data as User;
 }
 
