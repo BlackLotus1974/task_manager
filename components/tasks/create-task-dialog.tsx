@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Project, User, PRIORITY_LABELS } from "@/lib/types";
+import { Project, PRIORITY_LABELS } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 
 interface CreateTaskDialogProps {

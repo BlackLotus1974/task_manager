@@ -259,7 +259,7 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
   }
   
   // Update the task
-  const { data: task, error: taskError } = await supabase
+  const { error: taskError } = await supabase
     .from('tasks')
     .update({
       title: updates.title,

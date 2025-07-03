@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, X } from "lucide-react";
-import { Project, User, TaskFilters as TaskFiltersType } from "@/lib/types";
+import { Project, TaskFilters as TaskFiltersType } from "@/lib/types";
 
 interface TaskFiltersProps {
   projects: Project[];

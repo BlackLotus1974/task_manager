@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { getProjects } from "@/lib/database/projects";
-import { getCurrentUser } from "@/lib/database/users";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

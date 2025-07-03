@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, User, PRIORITY_LABELS } from "@/lib/types";
+import { Project, PRIORITY_LABELS } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 
 interface CreateTaskFormProps {

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/database/users";
 import { getTasks } from "@/lib/database/tasks";
-import { getProjects } from "@/lib/database/projects";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
