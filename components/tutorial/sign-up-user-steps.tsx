@@ -3,6 +3,8 @@ import { TutorialStep } from "./tutorial-step";
 import { ArrowUpRight } from "lucide-react";
 
 export function SignUpUserSteps() {
+  const localUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  
   return (
     <ol className="flex flex-col gap-6">
       {process.env.VERCEL_ENV === "preview" ||
@@ -36,7 +38,7 @@ export function SignUpUserSteps() {
             <li>
               -{" "}
               <span className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-medium text-secondary-foreground border">
-                http://localhost:3000/**
+                {localUrl}/**
               </span>
             </li>
             <li>
