@@ -9,14 +9,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, PRIORITY_LABELS } from "@/lib/types";
+import { Project, User, PRIORITY_LABELS } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 
 interface CreateTaskFormProps {
   projects: Project[];
+  users: User[];
 }
 
-export function CreateTaskForm({ projects }: CreateTaskFormProps) {
+export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -26,6 +27,7 @@ export function CreateTaskForm({ projects }: CreateTaskFormProps) {
     priority: 2 as 1 | 2 | 3 | 4,
     due_date: "",
     project_id: "",
+    assignee_ids: [] as string[],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,6 +44,7 @@ export function CreateTaskForm({ projects }: CreateTaskFormProps) {
         priority: formData.priority,
         due_date: formData.due_date || undefined,
         project_id: formData.project_id || undefined,
+        assignee_ids: formData.assignee_ids,
       });
       
       if (result.success) {
@@ -148,6 +151,29 @@ export function CreateTaskForm({ projects }: CreateTaskFormProps) {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <Label htmlFor="assignees">Assign To</Label>
+              <select
+                id="assignees"
+                multiple
+                value={formData.assignee_ids}
+                onChange={(e) => {
+                  const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
+                  setFormData(prev => ({ ...prev, assignee_ids: selectedIds }))
+                }}
+                className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1 h-24"
+              >
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.full_name || user.email}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Hold Ctrl or Cmd to select multiple users.
+              </p>
             </div>
 
             <div className="flex justify-end space-x-3">

@@ -9,6 +9,7 @@ export async function createTaskAction(formData: {
   priority: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
+  assignee_ids?: string[];
 }) {
   try {
     const task = await createTask(formData);
