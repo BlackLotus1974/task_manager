@@ -13,7 +13,11 @@ interface TaskFiltersProps {
   currentFilters: Partial<TaskFiltersType>;
 }
 
-export function TaskFilters({ projects, users, currentFilters }: TaskFiltersProps) {
+export function TaskFilters({ 
+  projects, 
+  users, // eslint-disable-line @typescript-eslint/no-unused-vars
+  currentFilters 
+}: TaskFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
