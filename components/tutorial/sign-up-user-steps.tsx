@@ -54,15 +54,18 @@ export function SignUpUserSteps() {
                   ".vercel.app",
                   "",
                 )}-*-[vercel-team-url].vercel.app/**`}
-              </span>{" "}
-              <Link
-                className="text-primary hover:text-foreground"
-                href="https://vercel.com/docs/accounts/create-a-team#find-your-team-id"
-                target="_blank"
-              >
-                Vercel Team settings
-              </Link>
-              {/* (Vercel Team URL can be found in Vercel Team settings) */}
+              </span>
+              <span>
+                {" (Vercel Team URL can be found in "}
+                <Link
+                  className="text-primary hover:text-foreground"
+                  href="https://vercel.com/docs/accounts/create-a-team#find-your-team-id"
+                  target="_blank"
+                >
+                  Vercel Team settings
+                </Link>
+                {")"}
+              </span>
             </li>
           </ul>
           <Link
