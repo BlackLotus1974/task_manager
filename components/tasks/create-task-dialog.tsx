@@ -6,19 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Project, PRIORITY_LABELS } from "@/lib/types";
+import { Project, User, PRIORITY_LABELS } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 
 interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projects: Project[];
+  users: User[];
 }
 
 export function CreateTaskDialog({
   open,
   onOpenChange,
   projects,
+  users, // eslint-disable-line @typescript-eslint/no-unused-vars
 }: CreateTaskDialogProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +31,7 @@ export function CreateTaskDialog({
     priority: 2 as 1 | 2 | 3 | 4,
     due_date: "",
     project_id: "",
+    assignee_ids: [] as string[],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,6 +48,7 @@ export function CreateTaskDialog({
         priority: formData.priority,
         due_date: formData.due_date || undefined,
         project_id: formData.project_id || undefined,
+        assignee_ids: formData.assignee_ids,
       });
       
       if (result.success) {
@@ -54,6 +58,7 @@ export function CreateTaskDialog({
           priority: 2,
           due_date: "",
           project_id: "",
+          assignee_ids: [],
         });
         onOpenChange(false);
         router.refresh();
@@ -147,6 +152,29 @@ export function CreateTaskDialog({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <Label htmlFor="assignees">Assign To</Label>
+            <select
+              id="assignees"
+              multiple
+              value={formData.assignee_ids}
+              onChange={(e) => {
+                const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
+                setFormData(prev => ({ ...prev, assignee_ids: selectedIds }))
+              }}
+              className="w-full px-3 py-2 border border-input bg-background rounded-md h-20"
+            >
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.full_name || user.email}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Hold Ctrl or Cmd to select multiple users.
+            </p>
           </div>
 
           <div className="flex justify-end space-x-2">
