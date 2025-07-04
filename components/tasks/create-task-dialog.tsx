@@ -20,7 +20,7 @@ export function CreateTaskDialog({
   open,
   onOpenChange,
   projects,
-  users, // eslint-disable-line @typescript-eslint/no-unused-vars
+  users,
 }: CreateTaskDialogProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

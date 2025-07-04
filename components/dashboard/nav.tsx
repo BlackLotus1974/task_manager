@@ -2,75 +2,58 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { 
-  CheckSquare, 
-  Kanban, 
-  FolderOpen, 
-  Users, 
-  Bell, 
-  Settings 
-} from "lucide-react";
 
 const navItems = [
   {
-    title: "Dashboard",
+    title: "Home",
     href: "/dashboard",
-    icon: CheckSquare,
+    icon: "🏠",
   },
   {
-    title: "Tasks",
+    title: "My work",
     href: "/dashboard/tasks",
-    icon: Kanban,
+    icon: "💼",
+  },
+  {
+    title: "Favorites",
+    href: "/dashboard/favorites",
+    icon: "⭐",
   },
   {
     title: "Projects",
     href: "/dashboard/projects",
-    icon: FolderOpen,
+    icon: "📁",
   },
   {
     title: "Team",
     href: "/dashboard/team",
-    icon: Users,
-  },
-  {
-    title: "Notifications",
-    href: "/dashboard/notifications",
-    icon: Bell,
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
+    icon: "👥",
   },
 ];
 
-export function DashboardNav() {
+export function Nav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center space-x-6 lg:space-x-8">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href || 
-          (item.href !== "/dashboard" && pathname.startsWith(item.href));
-        
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center space-x-2 text-sm font-medium transition-colors hover:text-primary",
-              isActive 
-                ? "text-primary border-b-2 border-primary pb-2" 
-                : "text-muted-foreground"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            <span>{item.title}</span>
-          </Link>
-        );
-      })}
+    <nav className="sidebar-nav">
+      <ul>
+        {navItems.map((item) => {
+          const isActive = pathname === item.href || 
+            (item.href !== "/dashboard" && pathname.startsWith(item.href));
+          
+          return (
+            <li key={item.href} className={isActive ? "active" : ""}>
+              <Link href={item.href}>
+                <span>{item.icon}</span>
+                <span>{item.title}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
-} 
+}
+
+// Keep the old export for backward compatibility
+export const DashboardNav = Nav; 

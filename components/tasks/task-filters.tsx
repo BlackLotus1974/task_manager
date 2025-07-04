@@ -10,13 +10,13 @@ import { Project, User, TaskFilters as TaskFiltersType } from "@/lib/types";
 interface TaskFiltersProps {
   projects: Project[];
   users: User[];
-  currentFilters: Partial<TaskFiltersType>;
+  currentFilters?: Partial<TaskFiltersType>;
 }
 
 export function TaskFilters({ 
   projects, 
   users, // eslint-disable-line @typescript-eslint/no-unused-vars
-  currentFilters 
+  currentFilters = {}
 }: TaskFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

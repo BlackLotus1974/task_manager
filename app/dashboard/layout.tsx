@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/database/users";
-import { DashboardNav } from "@/components/dashboard/nav";
+import { Nav } from "@/components/dashboard/nav";
 import { UserNav } from "@/components/dashboard/user-nav";
 
 export default async function DashboardLayout({
@@ -34,24 +35,58 @@ export default async function DashboardLayout({
   console.log("✅ DashboardLayout: Authentication successful, rendering dashboard");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b">
-        <div className="flex h-16 items-center px-4">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-semibold">Atchalta Task Manager</h1>
+    <div className="app-container">
+      {/* Sidebar */}
+      <div className="sidebar">
+        <div className="sidebar-header">
+          <div className="logo">
+            <span style={{fontSize: '24px'}}>📋</span>
+            <span>Atchalta Task Manager</span>
           </div>
-          <div className="ml-auto flex items-center space-x-4">
-            <UserNav user={user} />
+          <button className="plans-btn">
+            See plans
+          </button>
+        </div>
+
+        <Nav />
+
+        <div className="sidebar-section">
+          <div className="section-header">
+            <span>My workspaces</span>
+            <i style={{transform: 'rotate(90deg)'}}>▶</i>
           </div>
+          <ul className="workspace-list">
+            <li className="active-workspace">
+              <div className="workspace-icon" style={{backgroundColor: '#6c5ce7'}}>
+                A
+              </div>
+              <span>Atchalta Workspace</span>
+            </li>
+          </ul>
+          <button className="add-workspace-btn">
+            +
+          </button>
         </div>
       </div>
-      
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <DashboardNav />
+
+      {/* Main Content */}
+      <div className="main-content">
+        <div className="main-header">
+          <div className="header-icons">
+            <i style={{position: 'relative'}}>🔔
+              <span className="notification-badge">3</span>
+            </i>
+            <i>❓</i>
+            <i>⚙️</i>
+          </div>
+          <div className="user-profile">
+            <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
+              <UserNav user={user} />
+            </Suspense>
+          </div>
         </div>
-        
-        <div className="space-y-4">
+
+        <div className="content-body">
           {children}
         </div>
       </div>

@@ -2,17 +2,6 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/database/users";
 import { getTasks } from "@/lib/database/tasks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { 
-  CheckSquare, 
-  Clock, 
-  AlertTriangle, 
-  FolderOpen,
-  Users,
-  TrendingUp
-} from "lucide-react";
-import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/types";
 import Link from "next/link";
 
 async function DashboardStats() {
@@ -24,7 +13,6 @@ async function DashboardStats() {
   const { tasks } = tasksResult;
   
   // Calculate stats
-  const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => task.status === 'done').length;
   const inProgressTasks = tasks.filter(task => task.status === 'in_progress').length;
   const todoTasks = tasks.filter(task => task.status === 'todo').length;
@@ -33,219 +21,219 @@ async function DashboardStats() {
     task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
   ).length;
   
-  const urgentTasks = tasks.filter(task => task.priority === 4).length;
-  
-  const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-  
-  // Recent tasks (last 5)
+  // Recent tasks (last 3)
   const recentTasks = tasks
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 5);
+    .slice(0, 3);
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Welcome back, {user?.full_name || 'User'}!
-        </h2>
-        <p className="text-muted-foreground">
-          Here&apos;s what&apos;s happening with your tasks today.
-        </p>
+    <div>
+      <div className="content-header">
+        <div className="title-section">
+          <h1>Good morning, {user?.full_name || 'Eran'}! ⛅</h1>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              {completedTasks} completed
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{inProgressTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              {todoTasks} to do
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overdue</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{overdueTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              Need attention
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Urgent Tasks</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{urgentTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              High priority
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Progress Overview */}
-        <Card className="col-span-4">
+      <div className="dashboard-grid" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '20px',
+        marginBottom: '30px'
+      }}>
+        <Card style={{
+          backgroundColor: 'var(--bg-content)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '8px'
+        }}>
           <CardHeader>
-            <CardTitle>Progress Overview</CardTitle>
-            <CardDescription>
-              Your task completion progress
+            <CardTitle style={{color: 'var(--text-primary)'}}>Tasks Overview</CardTitle>
+            <CardDescription style={{color: 'var(--text-secondary)'}}>
+              Your task summary for today
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Overall Completion</span>
-                <span className="text-sm text-muted-foreground">
-                  {completionRate.toFixed(1)}%
+          <CardContent>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
+              <span style={{color: 'var(--text-secondary)'}}>Completed</span>
+              <span style={{color: 'var(--today-green)', fontWeight: '500'}}>{completedTasks}</span>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
+              <span style={{color: 'var(--text-secondary)'}}>In Progress</span>
+              <span style={{color: 'var(--primary-blue)', fontWeight: '500'}}>{inProgressTasks}</span>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
+              <span style={{color: 'var(--text-secondary)'}}>Overdue</span>
+              <span style={{color: 'var(--urgent-red)', fontWeight: '500'}}>{overdueTasks}</span>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
+              <span style={{color: 'var(--text-secondary)'}}>To Do</span>
+              <span style={{color: 'var(--text-primary)', fontWeight: '500'}}>{todoTasks}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card style={{
+          backgroundColor: 'var(--bg-content)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '8px'
+        }}>
+          <CardHeader>
+            <CardTitle style={{color: 'var(--text-primary)'}}>Recent Activity</CardTitle>
+            <CardDescription style={{color: 'var(--text-secondary)'}}>
+              Latest updates from your tasks
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {recentTasks.length > 0 ? (
+              recentTasks.map((task) => (
+                <div key={task.id} style={{marginBottom: '15px'}}>
+                  <div style={{color: 'var(--text-primary)', fontWeight: '500', marginBottom: '5px'}}>
+                    <Link href={`/dashboard/tasks`} style={{color: 'inherit', textDecoration: 'none'}}>
+                      {task.title}
+                    </Link>
+                  </div>
+                  <div style={{color: 'var(--text-secondary)', fontSize: '12px'}}>
+                    {task.status === 'done' ? 'Completed' : 
+                     task.status === 'in_progress' ? 'In Progress' : 'To Do'}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{color: 'var(--text-secondary)'}}>No recent tasks</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card style={{
+          backgroundColor: 'var(--bg-content)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '8px'
+        }}>
+          <CardHeader>
+            <CardTitle style={{color: 'var(--text-primary)'}}>Quick Actions</CardTitle>
+            <CardDescription style={{color: 'var(--text-secondary)'}}>
+              Common tasks and shortcuts
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+              <Link href="/dashboard/tasks/new" style={{textDecoration: 'none'}}>
+                <button className="new-item-btn" style={{width: '100%', textAlign: 'left'}}>
+                  ➕ Create New Task
+                </button>
+              </Link>
+              <Link href="/dashboard/projects" style={{textDecoration: 'none'}}>
+                <button className="new-item-btn" style={{
+                  width: '100%', 
+                  textAlign: 'left',
+                  backgroundColor: 'var(--bg-sidebar)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  📁 View Projects
+                </button>
+              </Link>
+              <Link href="/dashboard/tasks" style={{textDecoration: 'none'}}>
+                <button className="new-item-btn" style={{
+                  width: '100%', 
+                  textAlign: 'left',
+                  backgroundColor: 'var(--bg-sidebar)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  📋 View All Tasks
+                </button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div style={{marginTop: '30px'}}>
+        <h2 style={{
+          fontSize: '20px', 
+          fontWeight: '500', 
+          marginBottom: '20px',
+          color: 'var(--text-primary)'
+        }}>
+          Today&apos;s Priority Tasks
+        </h2>
+        
+        <div style={{
+          backgroundColor: 'var(--bg-content)',
+          borderRadius: '8px',
+          border: '1px solid var(--border-color)',
+          padding: '20px'
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '2fr 1fr 1fr 1fr',
+            gap: '15px',
+            padding: '10px',
+            borderBottom: '1px solid var(--border-color)',
+            marginBottom: '15px'
+          }}>
+            <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Task</div>
+            <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Status</div>
+            <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Priority</div>
+            <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Due Date</div>
+          </div>
+          
+          {tasks.slice(0, 3).map((task, index) => (
+            <div key={task.id} style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr',
+              gap: '15px',
+              padding: '10px',
+              marginBottom: index < 2 ? '10px' : '0'
+            }}>
+              <div style={{color: 'var(--text-primary)'}}>{task.title}</div>
+              <div>
+                <span className={`status ${
+                  task.status === 'done' ? 'priority-3' : 
+                  task.priority === 4 ? 'urgent' : 'priority-3'
+                }`}>
+                  {task.status === 'done' ? 'Done' :
+                   task.status === 'in_progress' ? 'In Progress' : 'To Do'}
                 </span>
               </div>
-              <Progress value={completionRate} className="w-full" />
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-gray-600">{todoTasks}</div>
-                <div className="text-xs text-muted-foreground">To Do</div>
+              <div style={{
+                color: task.priority === 4 ? 'var(--urgent-red)' : 
+                       task.priority === 3 ? 'var(--primary-blue)' : 'var(--today-green)',
+                fontWeight: '500'
+              }}>
+                {task.priority === 4 ? 'Urgent' : 
+                 task.priority === 3 ? 'High' : 
+                 task.priority === 2 ? 'Medium' : 'Low'}
               </div>
-              <div>
-                <div className="text-2xl font-bold text-blue-600">{inProgressTasks}</div>
-                <div className="text-xs text-muted-foreground">In Progress</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">{completedTasks}</div>
-                <div className="text-xs text-muted-foreground">Completed</div>
+              <div style={{color: 'var(--text-secondary)'}}>
+                {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No date'}
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Tasks</CardTitle>
-            <CardDescription>
-              Your latest created tasks
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentTasks.length > 0 ? (
-                recentTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Link 
-                        href={`/dashboard/tasks/${task.id}`}
-                        className="text-sm font-medium hover:underline line-clamp-1"
-                      >
-                        {task.title}
-                      </Link>
-                      <div className="flex items-center space-x-2">
-                        <Badge 
-                          variant="secondary" 
-                          className={`text-xs ${STATUS_COLORS[task.status]}`}
-                        >
-                          {task.status.replace('_', ' ')}
-                        </Badge>
-                        {task.priority > 2 && (
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${PRIORITY_COLORS[task.priority]}`}
-                          >
-                            {task.priority === 4 ? 'Urgent' : 'High'}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No tasks yet. Create your first task!
-                </p>
-              )}
+          ))}
+          
+          {tasks.length === 0 && (
+            <div style={{
+              color: 'var(--text-secondary)',
+              textAlign: 'center',
+              padding: '20px'
+            }}>
+              No tasks yet. <Link href="/dashboard/tasks/new" style={{color: 'var(--primary-blue)'}}>Create your first task!</Link>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <Link href="/dashboard/tasks/new">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <CheckSquare className="h-5 w-5" />
-                <span>Create Task</span>
-              </CardTitle>
-              <CardDescription>
-                Add a new task to your workflow
-              </CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <Link href="/dashboard/projects/new">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <FolderOpen className="h-5 w-5" />
-                <span>New Project</span>
-              </CardTitle>
-              <CardDescription>
-                Start organizing tasks in projects
-              </CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <Link href="/dashboard/team">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
-                <span>Manage Team</span>
-              </CardTitle>
-              <CardDescription>
-                Invite members and manage roles
-              </CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
-      </div>
+      {/* Help Button */}
+      <button className="help-button">
+        ❓ Help
+      </button>
     </div>
   );
 }
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div>Loading dashboard...</div>}>
+    <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
       <DashboardStats />
     </Suspense>
   );
