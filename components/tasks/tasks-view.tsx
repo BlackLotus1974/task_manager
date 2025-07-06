@@ -3,6 +3,9 @@
 import { Task, Project, User } from "@/lib/types";
 import { TaskBoard } from "./task-board";
 import { formatDate } from "@/lib/utils";
+import { InlineStatusEditor } from "./inline-status-editor";
+import { useState } from "react";
+import Link from "next/link";
 
 interface TasksViewProps {
   tasks: Task[];
@@ -11,7 +14,18 @@ interface TasksViewProps {
   users: User[];
 }
 
-export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
+export function TasksView({ tasks: initialTasks, view, projects, users }: TasksViewProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  const handleStatusChange = (taskId: string, deleted: boolean) => {
+    if (deleted) {
+      // Remove task from the list when it's marked as done (deleted)
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    } else {
+      // Refresh task data (could be improved with optimistic updates)
+      window.location.reload(); // Simple refresh for now
+    }
+  };
   if (view === 'board') {
     return <TaskBoard tasks={tasks} projects={projects} users={users} />;
   }
@@ -61,10 +75,7 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                   ) : '-'}
                 </div>
                 <div>
-                  <span className={`status ${task.status === 'done' ? 'priority-3' : task.priority === 4 ? 'urgent' : 'priority-3'}`}>
-                    {task.status === 'done' ? 'Done' :
-                     task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
-                  </span>
+                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
                 </div>
                 <div style={{color: 'var(--urgent-red)'}}>
                   {task.due_date ? formatDate(task.due_date) : '-'}
@@ -101,10 +112,7 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                   ) : '-'}
                 </div>
                 <div>
-                  <span className={`status ${task.status === 'done' ? 'priority-3' : task.priority === 4 ? 'urgent' : 'priority-3'}`}>
-                    {task.status === 'done' ? 'Done' :
-                     task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
-                  </span>
+                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
                 </div>
                 <div style={{color: 'var(--today-green)'}}>
                   {task.due_date ? formatDate(task.due_date) : '-'}
@@ -141,10 +149,7 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                   ) : '-'}
                 </div>
                 <div>
-                  <span className={`status ${task.status === 'done' ? 'priority-3' : task.priority === 4 ? 'urgent' : 'priority-3'}`}>
-                    {task.status === 'done' ? 'Done' :
-                     task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
-                  </span>
+                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
                 </div>
                 <div style={{color: 'var(--text-secondary)'}}>
                   {task.due_date ? formatDate(task.due_date) : '-'}
@@ -162,10 +167,10 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
       )}
 
       {/* Add Task Row */}
-      <div className="add-task">
+      <Link href="/dashboard/tasks/new" className="add-task" style={{ textDecoration: 'none' }}>
         <i>➕</i>
         <span>Add new task</span>
-      </div>
+      </Link>
 
       {/* No tasks message */}
       {tasks.length === 0 && (

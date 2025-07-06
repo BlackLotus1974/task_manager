@@ -33,6 +33,9 @@ export async function getTasks(
   // Apply filters
   if (filters?.status) {
     query = query.eq('status', filters.status);
+  } else {
+    // By default, filter out "done" tasks unless explicitly requested
+    query = query.neq('status', 'done');
   }
   
   if (filters?.priority) {
@@ -188,7 +191,8 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
       priority: taskData.priority,
       due_date: taskData.due_date,
       project_id: taskData.project_id,
-      created_by: user.id
+      created_by: user.id,
+      status: taskData.status,
     })
     .select()
     .single();

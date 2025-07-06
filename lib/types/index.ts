@@ -23,7 +23,7 @@ export interface Task {
   id: string;
   title: string;
   description?: string;
-  status: 'todo' | 'in_progress' | 'done';
+  status: 'urgent' | 'priority_2' | 'priority_3' | 'done';
   priority: 1 | 2 | 3 | 4; // 1=Low, 2=Medium, 3=High, 4=Urgent
   due_date?: string;
   project_id?: string;
@@ -114,7 +114,7 @@ export interface ActivityLog {
 }
 
 export interface TaskFilters {
-  status?: 'todo' | 'in_progress' | 'done';
+  status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
   priority?: 1 | 2 | 3 | 4;
   assignee?: string;
   project?: string;
@@ -131,6 +131,7 @@ export interface TaskSort {
 export interface CreateTaskData {
   title: string;
   description?: string;
+  status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
   priority: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
@@ -141,7 +142,7 @@ export interface CreateTaskData {
 export interface UpdateTaskData {
   title?: string;
   description?: string;
-  status?: 'todo' | 'in_progress' | 'done';
+  status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
   priority?: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
@@ -191,13 +192,15 @@ export const PRIORITY_COLORS = {
 } as const;
 
 export const STATUS_LABELS = {
-  todo: 'To Do',
-  in_progress: 'In Progress',
+  urgent: 'Urgent',
+  priority_2: 'Priority 2',
+  priority_3: 'Priority 3',
   done: 'Done'
 } as const;
 
 export const STATUS_COLORS = {
-  todo: 'bg-gray-100 text-gray-800',
-  in_progress: 'bg-blue-100 text-blue-800',
+  urgent: 'bg-red-100 text-red-800',
+  priority_2: 'bg-yellow-100 text-yellow-800',
+  priority_3: 'bg-blue-100 text-blue-800',
   done: 'bg-green-100 text-green-800'
 } as const; 

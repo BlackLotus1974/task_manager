@@ -347,10 +347,18 @@ body {
     font-weight: 500;
     border-radius: 20px;
     text-align: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-.status.priority-3 { background-color: #037f4c; }
+.status:hover {
+    opacity: 0.8;
+}
+
 .status.urgent { background-color: var(--urgent-red); }
+.status.priority_2 { background-color: #f59e0b; } /* Yellow */
+.status.priority_3 { background-color: #3b82f6; } /* Blue */
+.status.done { background-color: #037f4c; } /* Green */
 
 .add-task {
     padding: 10px;

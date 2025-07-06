@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+export const dynamic = 'force-dynamic';
+
 import { getTasks } from "@/lib/database/tasks";
 import { getProjects } from "@/lib/database/projects";
 import { getAllUsers } from "@/lib/database/users";
@@ -6,6 +8,7 @@ import { TasksView } from "@/components/tasks/tasks-view";
 import { TaskViewToggle } from "@/components/tasks/task-view-toggle";
 import { TaskFilters } from "@/components/tasks/task-filters";
 import { CreateTaskButton } from "@/components/tasks/create-task-button";
+import { TaskFilters as TaskFiltersType } from "@/lib/types";
 
 interface TasksPageProps {
   searchParams: {
@@ -18,8 +21,15 @@ interface TasksPageProps {
 }
 
 async function TasksContent({ searchParams }: TasksPageProps) {
+  const filters: TaskFiltersType = {
+    status: searchParams.status === 'done' ? 'done' : undefined,
+    priority: searchParams.priority ? parseInt(searchParams.priority, 10) as 1 | 2 | 3 | 4 : undefined,
+    project: searchParams.project,
+    assignee: searchParams.assignee,
+  };
+
   const [tasksResult, projects, users] = await Promise.all([
-    getTasks(),
+    getTasks(filters),
     getProjects(),
     getAllUsers(),
   ]);
@@ -55,6 +65,7 @@ async function TasksContent({ searchParams }: TasksPageProps) {
         <TaskFilters 
           users={users}
           projects={projects}
+          currentFilters={filters}
         />
         
         <div className="view-dropdown">

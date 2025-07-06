@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, X } from "lucide-react";
 import { Project, User, TaskFilters as TaskFiltersType } from "@/lib/types";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface TaskFiltersProps {
   projects: Project[];
@@ -52,6 +54,15 @@ export function TaskFilters({
             onChange={(e) => updateFilter('search', e.target.value || null)}
             className="pl-8"
           />
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="show-completed"
+            checked={searchParams.get('status') === 'done'}
+            onCheckedChange={(checked: boolean) => updateFilter('status', checked ? 'done' : null)}
+          />
+          <Label htmlFor="show-completed">Show Completed</Label>
         </div>
         
         {hasActiveFilters && (

@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 export async function createTaskAction(formData: {
   title: string;
   description?: string;
+  status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
   priority: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
@@ -26,13 +27,20 @@ export async function updateTaskAction(
   formData: {
     title?: string;
     description?: string;
-    status?: "todo" | "in_progress" | "done";
+    status?: "urgent" | "priority_2" | "priority_3" | "done";
     priority?: 1 | 2 | 3 | 4;
     due_date?: string;
     project_id?: string;
   }
 ) {
   try {
+    // If status is being set to "done", delete the task instead
+    if (formData.status === 'done') {
+      await deleteTask(taskId);
+      revalidatePath("/dashboard/tasks");
+      return { success: true, deleted: true };
+    }
+    
     const task = await updateTask(taskId, formData);
     revalidatePath("/dashboard/tasks");
     return { success: true, task };

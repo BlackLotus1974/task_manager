@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Project, User, PRIORITY_LABELS } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
+import { useUndo } from "@/contexts/undo-context";
 
 interface CreateTaskFormProps {
   projects: Project[];
@@ -19,6 +20,7 @@ interface CreateTaskFormProps {
 
 export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
   const router = useRouter();
+  const { addUndoAction } = useUndo();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -47,7 +49,8 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
         assignee_ids: formData.assignee_ids,
       });
       
-      if (result.success) {
+      if (result.success && result.task) {
+        addUndoAction({ type: 'create', task: result.task });
         router.push("/dashboard/tasks");
       } else {
         setError(result.error || "Failed to create task");

@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/database/users";
 import { Nav } from "@/components/dashboard/nav";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { UndoProvider } from "@/contexts/undo-context";
+import { UndoToast } from "@/components/tasks/undo-toast";
 
 export default async function DashboardLayout({
   children,
@@ -35,58 +37,61 @@ export default async function DashboardLayout({
   console.log("✅ DashboardLayout: Authentication successful, rendering dashboard");
 
   return (
-    <div className="app-container">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="logo">
-            <span style={{fontSize: '24px'}}>📋</span>
-            <span>Atchalta Task Manager</span>
+    <UndoProvider>
+      <div className="app-container">
+        {/* Sidebar */}
+        <div className="sidebar">
+          <div className="sidebar-header">
+            <div className="logo">
+              <span style={{fontSize: '24px'}}>📋</span>
+              <span>Atchalta Task Manager</span>
+            </div>
+          </div>
+
+          <Nav />
+
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span>My workspaces</span>
+              <i style={{transform: 'rotate(90deg)'}}>▶</i>
+            </div>
+            <ul className="workspace-list">
+              <li className="active-workspace">
+                <div className="workspace-icon" style={{backgroundColor: '#6c5ce7'}}>
+                  A
+                </div>
+                <span>Atchalta Workspace</span>
+              </li>
+            </ul>
+            <button className="add-workspace-btn">
+              +
+            </button>
           </div>
         </div>
 
-        <Nav />
-
-        <div className="sidebar-section">
-          <div className="section-header">
-            <span>My workspaces</span>
-            <i style={{transform: 'rotate(90deg)'}}>▶</i>
+        {/* Main Content */}
+        <div className="main-content">
+          <div className="main-header">
+            <div className="header-icons">
+              <i style={{position: 'relative'}}>🔔
+                <span className="notification-badge">3</span>
+              </i>
+              <i>❓</i>
+              <i>⚙️</i>
+            </div>
+            <div className="user-profile">
+              <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
+                <UserNav user={user} />
+              </Suspense>
+            </div>
           </div>
-          <ul className="workspace-list">
-            <li className="active-workspace">
-              <div className="workspace-icon" style={{backgroundColor: '#6c5ce7'}}>
-                A
-              </div>
-              <span>Atchalta Workspace</span>
-            </li>
-          </ul>
-          <button className="add-workspace-btn">
-            +
-          </button>
+
+          <div className="content-body">
+            {children}
+          </div>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="main-content">
-        <div className="main-header">
-          <div className="header-icons">
-            <i style={{position: 'relative'}}>🔔
-              <span className="notification-badge">3</span>
-            </i>
-            <i>❓</i>
-            <i>⚙️</i>
-          </div>
-          <div className="user-profile">
-            <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
-              <UserNav user={user} />
-            </Suspense>
-          </div>
-        </div>
-
-        <div className="content-body">
-          {children}
-        </div>
-      </div>
-    </div>
+      <UndoToast />
+    </UndoProvider>
   );
 } 
