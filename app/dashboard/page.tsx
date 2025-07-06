@@ -63,11 +63,8 @@ async function DashboardStats() {
         </div>
       </div>
 
-      <div className="dashboard-grid" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '20px',
-        marginBottom: '30px'
+      <div className="grid gap-8 mb-8" style={{
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
       }}>
         <Card style={{
           backgroundColor: 'var(--bg-content)',

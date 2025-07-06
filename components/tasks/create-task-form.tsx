@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, User, PRIORITY_LABELS, STATUS_LABELS, Task } from "@/lib/types";
+import { Project, User, STATUS_LABELS, Task } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 import { useUndo } from "@/contexts/undo-context";
 
@@ -27,7 +27,6 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
     title: "",
     description: "",
     status: "priority_3" as Task['status'],
-    priority: 2 as 1 | 2 | 3 | 4,
     due_date: "",
     project_id: "",
     assignee_ids: [] as string[],
@@ -45,7 +44,6 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
         title: formData.title,
         description: formData.description || undefined,
         status: formData.status,
-        priority: formData.priority,
         due_date: formData.due_date || undefined,
         project_id: formData.project_id || undefined,
         assignee_ids: formData.assignee_ids,
@@ -127,18 +125,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
               </div>
 
               <div className="form-row">
-                <Label htmlFor="priority">Priority</Label>
-                <select
-                  id="priority"
-                  value={formData.priority}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) as 1 | 2 | 3 | 4 }))}
-                >
-                  {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+                {/* This space is intentionally left blank to maintain the grid layout */}
               </div>
             </div>
 

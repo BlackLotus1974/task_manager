@@ -188,7 +188,6 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
     .insert({
       title: taskData.title,
       description: taskData.description,
-      priority: taskData.priority,
       due_date: taskData.due_date,
       project_id: taskData.project_id,
       created_by: user.id,
@@ -235,8 +234,7 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
   
   // Log activity
   await logActivity('created', 'task', task.id, user.id, {
-    title: taskData.title,
-    priority: taskData.priority
+    title: taskData.title
   });
   
   // Return the complete task with relations
@@ -269,7 +267,6 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
       title: updates.title,
       description: updates.description,
       status: updates.status,
-      priority: updates.priority,
       due_date: updates.due_date,
       project_id: updates.project_id,
       updated_at: new Date().toISOString()

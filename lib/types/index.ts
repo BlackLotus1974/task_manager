@@ -24,7 +24,7 @@ export interface Task {
   title: string;
   description?: string;
   status: 'urgent' | 'priority_2' | 'priority_3' | 'done';
-  priority: 1 | 2 | 3 | 4; // 1=Low, 2=Medium, 3=High, 4=Urgent
+  priority?: 1 | 2 | 3 | 4; // 1=Low, 2=Medium, 3=High, 4=Urgent
   due_date?: string;
   project_id?: string;
   created_by: string;
@@ -132,7 +132,7 @@ export interface CreateTaskData {
   title: string;
   description?: string;
   status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
-  priority: 1 | 2 | 3 | 4;
+  priority?: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
   assignee_ids?: string[];
@@ -176,20 +176,6 @@ export interface NotificationSettings {
   comment_added: boolean;
   task_completed: boolean;
 }
-
-export const PRIORITY_LABELS = {
-  1: 'Low',
-  2: 'Medium', 
-  3: 'High',
-  4: 'Urgent'
-} as const;
-
-export const PRIORITY_COLORS = {
-  1: 'bg-gray-100 text-gray-800',
-  2: 'bg-blue-100 text-blue-800',
-  3: 'bg-yellow-100 text-yellow-800',
-  4: 'bg-red-100 text-red-800'
-} as const;
 
 export const STATUS_LABELS = {
   urgent: 'Urgent',

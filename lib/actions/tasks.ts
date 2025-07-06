@@ -7,7 +7,6 @@ export async function createTaskAction(formData: {
   title: string;
   description?: string;
   status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
-  priority: 1 | 2 | 3 | 4;
   due_date?: string;
   project_id?: string;
   assignee_ids?: string[];

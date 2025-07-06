@@ -21,12 +21,10 @@ async function ProjectsContent() {
             Organize your tasks into projects and workspaces
           </p>
         </div>
-        <Link href="/dashboard/projects/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Project
-          </Button>
-        </Link>
+        <Button onClick={() => alert('New Project functionality coming soon!')}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Project
+        </Button>
       </div>
 
       {projects.length === 0 ? (
@@ -36,12 +34,10 @@ async function ProjectsContent() {
           <p className="text-muted-foreground mb-4">
             Create your first project to organize your tasks
           </p>
-          <Link href="/dashboard/projects/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Project
-            </Button>
-          </Link>
+          <Button onClick={() => alert('New Project functionality coming soon!')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Project
+          </Button>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

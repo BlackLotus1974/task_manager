@@ -73,11 +73,25 @@ export default async function DashboardLayout({
         <div className="main-content">
           <div className="main-header">
             <div className="header-icons">
-              <i style={{position: 'relative'}}>🔔
+              <i 
+                style={{position: 'relative', cursor: 'pointer'}} 
+                onClick={() => alert('Notifications feature coming soon!')}
+              >
+                🔔
                 <span className="notification-badge">3</span>
               </i>
-              <i>❓</i>
-              <i>⚙️</i>
+              <i 
+                style={{cursor: 'pointer'}} 
+                onClick={() => alert('Help feature coming soon!')}
+              >
+                ❓
+              </i>
+              <i 
+                style={{cursor: 'pointer'}} 
+                onClick={() => alert('Settings feature coming soon!')}
+              >
+                ⚙️
+              </i>
             </div>
             <div className="user-profile">
               <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>

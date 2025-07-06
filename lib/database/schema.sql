@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
     title TEXT NOT NULL,
     description TEXT,
     status TEXT CHECK (status IN ('urgent', 'priority_2', 'priority_3', 'done')) DEFAULT 'priority_2',
-    priority INTEGER CHECK (priority IN (1, 2, 3, 4)) DEFAULT 2, -- 1=Low, 2=Medium, 3=High, 4=Urgent
+    priority INTEGER DEFAULT 2, -- 1=Low, 2=Medium, 3=High, 4=Urgent. DEPRECATED
     due_date TIMESTAMP WITH TIME ZONE,
     project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
     created_by UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
@@ -124,7 +124,6 @@ CREATE TABLE IF NOT EXISTS public.activity_log (
 CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON public.tasks(project_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON public.tasks(status);
 CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON public.tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_tasks_priority ON public.tasks(priority);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_task_id ON public.task_assignments(task_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_user_id ON public.task_assignments(user_id);
 CREATE INDEX IF NOT EXISTS idx_comments_task_id ON public.comments(task_id);
