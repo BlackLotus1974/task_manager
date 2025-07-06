@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, User, PRIORITY_LABELS } from "@/lib/types";
+import { Project, User, PRIORITY_LABELS, STATUS_LABELS, Task } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 import { useUndo } from "@/contexts/undo-context";
 
@@ -26,6 +26,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    status: "priority_3" as Task['status'],
     priority: 2 as 1 | 2 | 3 | 4,
     due_date: "",
     project_id: "",
@@ -43,6 +44,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
       const result = await createTaskAction({
         title: formData.title,
         description: formData.description || undefined,
+        status: formData.status,
         priority: formData.priority,
         due_date: formData.due_date || undefined,
         project_id: formData.project_id || undefined,
@@ -111,6 +113,22 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <select
+                  id="status"
+                  value={formData.status}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, status: e.target.value as Task['status'] }))}
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1"
+                >
+                  {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <Label htmlFor="priority">Priority</Label>
                 <select
