@@ -84,15 +84,6 @@ export function TaskFilters({
               />
             </Badge>
           )}
-          {currentFilters.priority && (
-            <Badge variant="secondary" className="gap-1">
-              Priority: {currentFilters.priority}
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => updateFilter('priority', null)}
-              />
-            </Badge>
-          )}
           {currentFilters.project && (
             <Badge variant="secondary" className="gap-1">
               Project: {projects.find(p => p.id === currentFilters.project)?.name}

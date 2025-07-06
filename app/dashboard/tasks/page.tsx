@@ -15,7 +15,6 @@ interface TasksPageProps {
   searchParams: {
     view?: 'list' | 'board';
     status?: string;
-    priority?: string;
     assignee?: string;
     project?: string;
   };
@@ -25,7 +24,6 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
   cookies(); // Opt into dynamic rendering to fix searchParams error
   const filters: TaskFiltersType = {
     status: searchParams.status === 'done' ? 'done' : undefined,
-    priority: searchParams.priority ? parseInt(searchParams.priority, 10) as 1 | 2 | 3 | 4 : undefined,
     project: searchParams.project,
     assignee: searchParams.assignee,
   };

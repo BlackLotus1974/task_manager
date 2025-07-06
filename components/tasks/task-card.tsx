@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Task, PRIORITY_COLORS, STATUS_COLORS, PRIORITY_LABELS } from "@/lib/types";
+import { Task, STATUS_COLORS } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User, MessageSquare, Paperclip } from "lucide-react";
@@ -25,17 +25,11 @@ export function TaskCard({ task }: TaskCardProps) {
             {task.title}
           </Link>
           <div className="flex items-center space-x-1 ml-2">
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className={`text-xs ${STATUS_COLORS[task.status]}`}
             >
               {task.status.replace('_', ' ')}
-            </Badge>
-            <Badge 
-              variant="outline" 
-              className={`text-xs ${PRIORITY_COLORS[task.priority]}`}
-            >
-              {PRIORITY_LABELS[task.priority]}
             </Badge>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Project, User, PRIORITY_LABELS, STATUS_LABELS, Task } from "@/lib/types";
+import { Project, User, STATUS_LABELS, Task } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 import { useUndo } from "@/contexts/undo-context";
 
@@ -31,7 +31,6 @@ export function CreateTaskDialog({
     title: "",
     description: "",
     status: "priority_3" as Task['status'],
-    priority: 2 as 1 | 2 | 3 | 4,
     due_date: "",
     project_id: "",
     assignee_ids: [] as string[],
@@ -49,7 +48,6 @@ export function CreateTaskDialog({
         title: formData.title,
         description: formData.description || undefined,
         status: formData.status,
-        priority: formData.priority,
         due_date: formData.due_date || undefined,
         project_id: formData.project_id || undefined,
         assignee_ids: formData.assignee_ids,
@@ -61,7 +59,6 @@ export function CreateTaskDialog({
           title: "",
           description: "",
           status: "priority_3",
-          priority: 2,
           due_date: "",
           project_id: "",
           assignee_ids: [],
@@ -93,36 +90,29 @@ export function CreateTaskDialog({
             </div>
           )}
           
-          <div>
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Task title..."
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Describe the task..."
-              rows={3}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="status">Status</Label>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                Title *
+              </Label>
+              <Input id="title" name="title" value={formData.title} onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))} placeholder="Task title..." required className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Textarea id="description" name="description" value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} placeholder="Describe the task..." rows={3} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">
+                Status
+              </Label>
               <select
                 id="status"
+                name="status"
                 value={formData.status}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, status: e.target.value as Task['status'] }))}
-                className="w-full px-3 py-2 border border-input bg-background rounded-md"
+                className="col-span-3"
               >
                 {Object.entries(STATUS_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -131,72 +121,53 @@ export function CreateTaskDialog({
                 ))}
               </select>
             </div>
-
-            <div>
-              <Label htmlFor="priority">Priority</Label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="due_date" className="text-right">
+                Due Date
+              </Label>
+              <Input id="due_date" name="due_date" type="date" value={formData.due_date} onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="project_id" className="text-right">
+                Project
+              </Label>
               <select
-                id="priority"
-                value={formData.priority}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) as 1 | 2 | 3 | 4 }))}
-                className="w-full px-3 py-2 border border-input bg-background rounded-md"
+                id="project_id"
+                name="project_id"
+                value={formData.project_id}
+                onChange={(e) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
+                className="col-span-3"
               >
-                {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
+                <option value="">Select a project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
                   </option>
                 ))}
               </select>
             </div>
-          </div>
-
-          <div>
-            <Label htmlFor="due_date">Due Date</Label>
-            <Input
-              id="due_date"
-              type="date"
-              value={formData.due_date}
-              onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="project_id">Project</Label>
-            <select
-              id="project_id"
-              value={formData.project_id}
-              onChange={(e) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md"
-            >
-              <option value="">No Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <Label htmlFor="assignees">Assign To</Label>
-            <select
-              id="assignees"
-              multiple
-              value={formData.assignee_ids}
-              onChange={(e) => {
-                const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
-                setFormData(prev => ({ ...prev, assignee_ids: selectedIds }))
-              }}
-              className="w-full px-3 py-2 border border-input bg-background rounded-md h-20"
-            >
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.full_name || user.email}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-muted-foreground mt-1">
-              Hold Ctrl or Cmd to select multiple users.
-            </p>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="assignee_ids" className="text-right">
+                Assignees
+              </Label>
+              <select
+                id="assignee_ids"
+                name="assignee_ids"
+                multiple
+                value={formData.assignee_ids}
+                onChange={(e) => {
+                  const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
+                  setFormData(prev => ({ ...prev, assignee_ids: selectedIds }))
+                }}
+                className="col-span-3"
+              >
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2">
