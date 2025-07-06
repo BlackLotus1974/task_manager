@@ -14,6 +14,44 @@ interface TasksViewProps {
   users: User[];
 }
 
+interface TaskRowProps {
+  task: Task;
+  onStatusChange: (taskId: string, deleted: boolean) => void;
+  projects: Project[];
+  users: User[];
+  color?: string;
+}
+
+// A dedicated component to ensure consistent rendering for each task row
+function TaskRow({ task, onStatusChange, projects, users, color }: TaskRowProps) {
+  return (
+    <div key={task.id} className="task-row">
+      <div className="task-grid task-grid-layout">
+        <div className="task-name">
+          <i className="fa-circle-check">☐</i>
+          <span>{task.title}</span>
+        </div>
+        <div className="task-avatar">
+          {task.assignees && task.assignees.length > 0
+            ? task.assignees[0].full_name?.charAt(0) || '?'
+            : '-'}
+        </div>
+        <div>
+          <InlineStatusEditor task={task} onStatusChange={onStatusChange} />
+        </div>
+        <div style={{ color: color || 'var(--text-secondary)' }}>
+          {task.due_date ? formatDate(task.due_date) : '-'}
+        </div>
+        <div>
+          {task.project_id
+            ? projects.find((p) => p.id === task.project_id)?.name || 'Unknown'
+            : '-'}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TasksView({ tasks: initialTasks, view, projects, users }: TasksViewProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -47,7 +85,7 @@ export function TasksView({ tasks: initialTasks, view, projects, users }: TasksV
   return (
     <div>
       {/* Task Header */}
-      <div className="task-grid task-header">
+      <div className="task-grid task-grid-layout task-header">
         <div>Task</div>
         <div>Person</div>
         <div>Status</div>
@@ -63,31 +101,14 @@ export function TasksView({ tasks: initialTasks, view, projects, users }: TasksV
             <span className="item-count">({overdueTasks.length})</span>
           </div>
           {overdueTasks.map((task) => (
-            <div key={task.id} className="task-row">
-              <div className="task-grid">
-                <div className="task-name">
-                  <i className="fa-circle-check">☐</i>
-                  <span>{task.title}</span>
-                </div>
-                <div className="task-avatar">
-                  {task.assignees && task.assignees.length > 0 ? (
-                    task.assignees[0].full_name?.charAt(0) || '?'
-                  ) : '-'}
-                </div>
-                <div>
-                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
-                </div>
-                <div style={{color: 'var(--urgent-red)'}}>
-                  {task.due_date ? formatDate(task.due_date) : '-'}
-                </div>
-                <div>
-                  {task.project_id ? 
-                    projects.find(p => p.id === task.project_id)?.name || 'Unknown' : 
-                    '-'
-                  }
-                </div>
-              </div>
-            </div>
+            <TaskRow 
+              key={task.id} 
+              task={task} 
+              onStatusChange={handleStatusChange} 
+              projects={projects} 
+              users={users} 
+              color="var(--urgent-red)" 
+            />
           ))}
         </div>
       )}
@@ -100,31 +121,14 @@ export function TasksView({ tasks: initialTasks, view, projects, users }: TasksV
             <span className="item-count">({todayTasks.length})</span>
           </div>
           {todayTasks.map((task) => (
-            <div key={task.id} className="task-row">
-              <div className="task-grid">
-                <div className="task-name">
-                  <i className="fa-circle-check">☐</i>
-                  <span>{task.title}</span>
-                </div>
-                <div className="task-avatar">
-                  {task.assignees && task.assignees.length > 0 ? (
-                    task.assignees[0].full_name?.charAt(0) || '?'
-                  ) : '-'}
-                </div>
-                <div>
-                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
-                </div>
-                <div style={{color: 'var(--today-green)'}}>
-                  {task.due_date ? formatDate(task.due_date) : '-'}
-                </div>
-                <div>
-                  {task.project_id ? 
-                    projects.find(p => p.id === task.project_id)?.name || 'Unknown' : 
-                    '-'
-                  }
-                </div>
-              </div>
-            </div>
+            <TaskRow 
+              key={task.id} 
+              task={task} 
+              onStatusChange={handleStatusChange} 
+              projects={projects} 
+              users={users} 
+              color="var(--today-green)" 
+            />
           ))}
         </div>
       )}
@@ -137,31 +141,13 @@ export function TasksView({ tasks: initialTasks, view, projects, users }: TasksV
             <span className="item-count">({otherTasks.length})</span>
           </div>
           {otherTasks.map((task) => (
-            <div key={task.id} className="task-row">
-              <div className="task-grid">
-                <div className="task-name">
-                  <i className="fa-circle-check">☐</i>
-                  <span>{task.title}</span>
-                </div>
-                <div className="task-avatar">
-                  {task.assignees && task.assignees.length > 0 ? (
-                    task.assignees[0].full_name?.charAt(0) || '?'
-                  ) : '-'}
-                </div>
-                <div>
-                  <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
-                </div>
-                <div style={{color: 'var(--text-secondary)'}}>
-                  {task.due_date ? formatDate(task.due_date) : '-'}
-                </div>
-                <div>
-                  {task.project_id ? 
-                    projects.find(p => p.id === task.project_id)?.name || 'Unknown' : 
-                    '-'
-                  }
-                </div>
-              </div>
-            </div>
+            <TaskRow 
+              key={task.id} 
+              task={task} 
+              onStatusChange={handleStatusChange} 
+              projects={projects} 
+              users={users} 
+            />
           ))}
         </div>
       )}

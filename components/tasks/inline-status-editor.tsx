@@ -92,9 +92,16 @@ export function InlineStatusEditor({ task, onStatusChange }: InlineStatusEditorP
     <div
       className={`status ${task.status}`}
       onClick={() => setIsEditing(true)}
-      style={{ 
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '4px 12px',
+        borderRadius: '20px',
+        fontSize: '13px',
+        fontWeight: '500',
+        color: 'white',
         backgroundColor: currentStatus?.color,
-        cursor: 'pointer' 
+        cursor: 'pointer'
       }}
       title="Click to change status"
     >

@@ -44,9 +44,9 @@ export async function updateTaskAction(
     const task = await updateTask(taskId, formData);
     revalidatePath("/dashboard/tasks");
     return { success: true, task };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update task:", error);
-    return { success: false, error: "Failed to update task" };
+    return { success: false, error: error.message };
   }
 }
 

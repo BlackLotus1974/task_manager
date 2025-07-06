@@ -4,6 +4,34 @@ import { getTasks } from "@/lib/database/tasks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
+import { STATUS_LABELS, Task } from "@/lib/types";
+
+// A small, local component for rendering the status badge consistently
+function StatusBadge({ status }: { status: Task['status'] }) {
+  const statusInfo = {
+    urgent: { label: "Urgent", color: "var(--urgent-red)" },
+    priority_2: { label: "Priority 2", color: "#f59e0b" },
+    priority_3: { label: "Priority 3", color: "#3b82f6" },
+    done: { label: "Done", color: "#037f4c" },
+  };
+
+  const currentStatus = statusInfo[status] || { label: 'Unknown', color: '#888' };
+
+  return (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '4px 12px',
+      borderRadius: '20px',
+      fontSize: '13px',
+      fontWeight: '500',
+      color: 'white',
+      backgroundColor: currentStatus.color,
+    }}>
+      {currentStatus.label}
+    </span>
+  );
+}
 
 async function DashboardStats() {
   const [user, tasksResult] = await Promise.all([
@@ -13,11 +41,11 @@ async function DashboardStats() {
 
   const { tasks } = tasksResult;
   
-  // Calculate stats
-  const completedTasks = tasks.filter(task => task.status === 'done').length;
-  const inProgressTasks = tasks.filter(task => task.status === 'in_progress').length;
-  const todoTasks = tasks.filter(task => task.status === 'todo').length;
-  
+  // Calculate stats based on the new status system
+  const urgentTasks = tasks.filter(task => task.status === 'urgent').length;
+  const p2Tasks = tasks.filter(task => task.status === 'priority_2').length;
+  const p3Tasks = tasks.filter(task => task.status === 'priority_3').length;
+
   const overdueTasks = tasks.filter(task => 
     task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
   ).length;
@@ -54,20 +82,20 @@ async function DashboardStats() {
           </CardHeader>
           <CardContent>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
-              <span style={{color: 'var(--text-secondary)'}}>Completed</span>
-              <span style={{color: 'var(--today-green)', fontWeight: '500'}}>{completedTasks}</span>
+              <span style={{color: 'var(--text-secondary)'}}>Urgent</span>
+              <span style={{color: 'var(--urgent-red)', fontWeight: '500'}}>{urgentTasks}</span>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
-              <span style={{color: 'var(--text-secondary)'}}>In Progress</span>
-              <span style={{color: 'var(--primary-blue)', fontWeight: '500'}}>{inProgressTasks}</span>
+              <span style={{color: 'var(--text-secondary)'}}>Priority 2</span>
+              <span style={{color: '#f59e0b', fontWeight: '500'}}>{p2Tasks}</span>
+            </div>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
+              <span style={{color: 'var(--text-secondary)'}}>Priority 3</span>
+              <span style={{color: '#3b82f6', fontWeight: '500'}}>{p3Tasks}</span>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
               <span style={{color: 'var(--text-secondary)'}}>Overdue</span>
               <span style={{color: 'var(--urgent-red)', fontWeight: '500'}}>{overdueTasks}</span>
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
-              <span style={{color: 'var(--text-secondary)'}}>To Do</span>
-              <span style={{color: 'var(--text-primary)', fontWeight: '500'}}>{todoTasks}</span>
             </div>
           </CardContent>
         </Card>
@@ -93,8 +121,7 @@ async function DashboardStats() {
                     </Link>
                   </div>
                   <div style={{color: 'var(--text-secondary)', fontSize: '12px'}}>
-                    {task.status === 'done' ? 'Completed' : 
-                     task.status === 'in_progress' ? 'In Progress' : 'To Do'}
+                    <StatusBadge status={task.status} />
                   </div>
                 </div>
               ))
@@ -188,13 +215,7 @@ async function DashboardStats() {
             }}>
               <div style={{color: 'var(--text-primary)'}}>{task.title}</div>
               <div>
-                <span className={`status ${
-                  task.status === 'done' ? 'priority-3' : 
-                  task.priority === 4 ? 'urgent' : 'priority-3'
-                }`}>
-                  {task.status === 'done' ? 'Done' :
-                   task.status === 'in_progress' ? 'In Progress' : 'To Do'}
-                </span>
+                <StatusBadge status={task.status} />
               </div>
               <div style={{color: 'var(--text-secondary)'}}>
                 {task.due_date ? formatDate(task.due_date) : 'No date'}

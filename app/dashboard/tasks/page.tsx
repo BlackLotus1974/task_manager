@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-export const dynamic = 'force-dynamic';
+import { cookies } from 'next/headers';
+export const revalidate = 0;
 
 import { getTasks } from "@/lib/database/tasks";
 import { getProjects } from "@/lib/database/projects";
@@ -20,7 +21,8 @@ interface TasksPageProps {
   };
 }
 
-async function TasksContent({ searchParams }: TasksPageProps) {
+export default async function TasksPage({ searchParams }: TasksPageProps) {
+  cookies(); // Opt into dynamic rendering to fix searchParams error
   const filters: TaskFiltersType = {
     status: searchParams.status === 'done' ? 'done' : undefined,
     priority: searchParams.priority ? parseInt(searchParams.priority, 10) as 1 | 2 | 3 | 4 : undefined,
@@ -39,60 +41,54 @@ async function TasksContent({ searchParams }: TasksPageProps) {
   const view = searchParams.view || 'list';
 
   return (
-    <div>
-      <div className="content-header">
-        <div className="title-section">
-          <h1>My work</h1>
-          <div className="view-options">
-            <TaskViewToggle currentView={view} />
-          </div>
-        </div>
-        
-        <div className="actions-section">
-          <div className="search-box">
-            <i>🔍</i>
-            <input type="text" placeholder="Search..." />
+    <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading tasks...</div>}>
+      <div>
+        <div className="content-header">
+          <div className="title-section">
+            <h1>My work</h1>
+            <div className="view-options">
+              <TaskViewToggle currentView={view} />
+            </div>
           </div>
           
-          <CreateTaskButton 
-            projects={projects} 
+          <div className="actions-section">
+            <div className="search-box">
+              <i>🔍</i>
+              <input type="text" placeholder="Search..." />
+            </div>
+            
+            <CreateTaskButton 
+              projects={projects} 
+              users={users}
+            />
+          </div>
+        </div>
+
+        <div className="controls-section">
+          <TaskFilters 
+            users={users}
+            projects={projects}
+            currentFilters={filters}
+          />
+          
+          <div className="view-dropdown">
+            <button>
+              <span>👤</span>
+              <span>Person</span>
+              <span>▼</span>
+            </button>
+          </div>
+        </div>
+
+        <div style={{marginTop: '20px'}}>
+          <TasksView 
+            tasks={tasks} 
+            view={view}
+            projects={projects}
             users={users}
           />
         </div>
       </div>
-
-      <div className="controls-section">
-        <TaskFilters 
-          users={users}
-          projects={projects}
-          currentFilters={filters}
-        />
-        
-        <div className="view-dropdown">
-          <button>
-            <span>👤</span>
-            <span>Person</span>
-            <span>▼</span>
-          </button>
-        </div>
-      </div>
-
-      <div style={{marginTop: '20px'}}>
-        <TasksView 
-          tasks={tasks} 
-          view={view}
-          projects={projects}
-          users={users}
-        />
-      </div>
-    </div>
-  );
-}
-
-export default function TasksPage({ searchParams }: TasksPageProps) {
-  return (
-    <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading tasks...</div>}>
-      <TasksContent searchParams={searchParams} />
     </Suspense>
   );
 } 

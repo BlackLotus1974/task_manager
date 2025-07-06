@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
-    status TEXT CHECK (status IN ('todo', 'in_progress', 'done')) DEFAULT 'todo',
+    status TEXT CHECK (status IN ('urgent', 'priority_2', 'priority_3', 'done')) DEFAULT 'priority_2',
     priority INTEGER CHECK (priority IN (1, 2, 3, 4)) DEFAULT 2, -- 1=Low, 2=Medium, 3=High, 4=Urgent
     due_date TIMESTAMP WITH TIME ZONE,
     project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,

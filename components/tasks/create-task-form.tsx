@@ -88,7 +88,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
               </div>
             )}
             
-            <div>
+            <div className="form-row">
               <Label htmlFor="title">Title *</Label>
               <Input
                 id="title"
@@ -96,11 +96,10 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="What needs to be done?"
                 required
-                className="mt-1"
               />
             </div>
 
-            <div>
+            <div className="form-row">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
@@ -108,18 +107,16 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Add more details about this task..."
                 rows={4}
-                className="mt-1"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+              <div className="form-row">
                 <Label htmlFor="status">Status</Label>
                 <select
                   id="status"
                   value={formData.status}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, status: e.target.value as Task['status'] }))}
-                  className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1"
                 >
                   {Object.entries(STATUS_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -129,13 +126,12 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                 </select>
               </div>
 
-              <div>
+              <div className="form-row">
                 <Label htmlFor="priority">Priority</Label>
                 <select
                   id="priority"
                   value={formData.priority}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) as 1 | 2 | 3 | 4 }))}
-                  className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1"
                 >
                   {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
@@ -144,37 +140,37 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                   ))}
                 </select>
               </div>
+            </div>
 
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-row">
+                <Label htmlFor="project_id">Project</Label>
+                <select
+                  id="project_id"
+                  value={formData.project_id}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
+                >
+                  <option value="">No Project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-row">
                 <Label htmlFor="due_date">Due Date</Label>
                 <Input
                   id="due_date"
                   type="date"
                   value={formData.due_date}
                   onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                  className="mt-1"
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="project_id">Project</Label>
-              <select
-                id="project_id"
-                value={formData.project_id}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
-                className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1"
-              >
-                <option value="">No Project</option>
-                {projects.map((project) => (
-                  <option key={project.id} value={project.id}>
-                    {project.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
+            <div className="form-row">
               <Label htmlFor="assignees">Assign To</Label>
               <select
                 id="assignees"
@@ -184,7 +180,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                   const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
                   setFormData(prev => ({ ...prev, assignee_ids: selectedIds }))
                 }}
-                className="w-full px-3 py-2 border border-input bg-background rounded-md mt-1 h-24"
+                className="h-24"
               >
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
@@ -197,7 +193,7 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
               </p>
             </div>
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 pt-4">
               <Link href="/dashboard/tasks">
                 <Button type="button" variant="outline" disabled={isLoading}>
                   Cancel

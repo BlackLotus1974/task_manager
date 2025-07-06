@@ -360,32 +360,44 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
 }
 
 export async function deleteTask(id: string): Promise<void> {
+  console.log(`[deleteTask] Starting deletion for task ID: ${id}`);
   const supabase = await createClient();
   
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
+    console.error('[deleteTask] Error: User not authenticated.');
     throw new Error('User not authenticated');
   }
+  console.log(`[deleteTask] Authenticated user: ${user.id}`);
   
   // Get task info for logging
   const task = await getTaskById(id);
   if (!task) {
-    throw new Error('Task not found');
+    console.warn(`[deleteTask] Warning: Task with ID ${id} not found before deletion.`);
+    // We can choose to throw an error or allow the delete to proceed,
+    // which will likely do nothing but won't error out.
+    // For now, we let it proceed.
+  } else {
+    console.log(`[deleteTask] Found task to delete: "${task.title}"`);
   }
   
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('tasks')
     .delete()
     .eq('id', id);
     
   if (error) {
+    console.error(`[deleteTask] Supabase delete error for task ID ${id}:`, error);
     throw new Error(`Failed to delete task: ${error.message}`);
   }
+
+  console.log(`[deleteTask] Supabase delete operation completed for task ID: ${id}. Returned data:`, data);
   
   // Log activity
   await logActivity('deleted', 'task', id, user.id, {
-    title: task.title
+    title: task?.title || 'Unknown Task'
   });
+  console.log(`[deleteTask] Activity logged for task ID: ${id}`);
 }
 
 export async function assignTask(taskId: string, userIds: string[]): Promise<void> {
