@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, FolderOpen, Users } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 async function ProjectsContent() {
@@ -72,7 +73,7 @@ async function ProjectsContent() {
                     </div>
                     
                     <Badge variant="outline" className="text-xs">
-                      {new Date(project.created_at).toLocaleDateString()}
+                      {formatDate(project.created_at)}
                     </Badge>
                   </div>
                 </CardContent>

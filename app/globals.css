@@ -280,7 +280,7 @@ body {
 /* ===== TASK LIST STYLES ===== */
 .task-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 0.5fr 0.7fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 0.7fr 1fr;
     align-items: center;
     gap: 15px;
     padding: 10px;

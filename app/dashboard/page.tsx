@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/database/users";
 import { getTasks } from "@/lib/database/tasks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 async function DashboardStats() {
@@ -155,7 +156,7 @@ async function DashboardStats() {
           marginBottom: '20px',
           color: 'var(--text-primary)'
         }}>
-          Today&apos;s Priority Tasks
+          Today&apos;s Tasks
         </h2>
         
         <div style={{
@@ -166,7 +167,7 @@ async function DashboardStats() {
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 1fr',
+            gridTemplateColumns: '2fr 1fr 1fr',
             gap: '15px',
             padding: '10px',
             borderBottom: '1px solid var(--border-color)',
@@ -174,14 +175,13 @@ async function DashboardStats() {
           }}>
             <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Task</div>
             <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Status</div>
-            <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Priority</div>
             <div style={{color: 'var(--text-secondary)', fontWeight: '500'}}>Due Date</div>
           </div>
           
           {tasks.slice(0, 3).map((task, index) => (
             <div key={task.id} style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr',
+              gridTemplateColumns: '2fr 1fr 1fr',
               gap: '15px',
               padding: '10px',
               marginBottom: index < 2 ? '10px' : '0'
@@ -196,17 +196,8 @@ async function DashboardStats() {
                    task.status === 'in_progress' ? 'In Progress' : 'To Do'}
                 </span>
               </div>
-              <div style={{
-                color: task.priority === 4 ? 'var(--urgent-red)' : 
-                       task.priority === 3 ? 'var(--primary-blue)' : 'var(--today-green)',
-                fontWeight: '500'
-              }}>
-                {task.priority === 4 ? 'Urgent' : 
-                 task.priority === 3 ? 'High' : 
-                 task.priority === 2 ? 'Medium' : 'Low'}
-              </div>
               <div style={{color: 'var(--text-secondary)'}}>
-                {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No date'}
+                {task.due_date ? formatDate(task.due_date) : 'No date'}
               </div>
             </div>
           ))}

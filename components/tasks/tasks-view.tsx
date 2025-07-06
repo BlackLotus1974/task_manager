@@ -2,6 +2,7 @@
 
 import { Task, Project, User } from "@/lib/types";
 import { TaskBoard } from "./task-board";
+import { formatDate } from "@/lib/utils";
 
 interface TasksViewProps {
   tasks: Task[];
@@ -36,7 +37,6 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
         <div>Task</div>
         <div>Person</div>
         <div>Status</div>
-        <div>Priority</div>
         <div>Due Date</div>
         <div>Project</div>
       </div>
@@ -66,14 +66,8 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                      task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
                   </span>
                 </div>
-                <div>
-                  <span className="dot purple"></span>
-                  {task.priority === 4 ? 'Urgent' : 
-                   task.priority === 3 ? 'High' : 
-                   task.priority === 2 ? 'Medium' : 'Low'}
-                </div>
                 <div style={{color: 'var(--urgent-red)'}}>
-                  {task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}
+                  {task.due_date ? formatDate(task.due_date) : '-'}
                 </div>
                 <div>
                   {task.project_id ? 
@@ -112,14 +106,8 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                      task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
                   </span>
                 </div>
-                <div>
-                  <span className="dot blue"></span>
-                  {task.priority === 4 ? 'Urgent' : 
-                   task.priority === 3 ? 'High' : 
-                   task.priority === 2 ? 'Medium' : 'Low'}
-                </div>
                 <div style={{color: 'var(--today-green)'}}>
-                  {task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}
+                  {task.due_date ? formatDate(task.due_date) : '-'}
                 </div>
                 <div>
                   {task.project_id ? 
@@ -158,14 +146,8 @@ export function TasksView({ tasks, view, projects, users }: TasksViewProps) {
                      task.status === 'in_progress' ? 'Working on it' : 'Stuck'}
                   </span>
                 </div>
-                <div>
-                  <span className="dot blue"></span>
-                  {task.priority === 4 ? 'Urgent' : 
-                   task.priority === 3 ? 'High' : 
-                   task.priority === 2 ? 'Medium' : 'Low'}
-                </div>
                 <div style={{color: 'var(--text-secondary)'}}>
-                  {task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}
+                  {task.due_date ? formatDate(task.due_date) : '-'}
                 </div>
                 <div>
                   {task.project_id ? 

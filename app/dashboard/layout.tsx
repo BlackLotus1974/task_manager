@@ -43,9 +43,6 @@ export default async function DashboardLayout({
             <span style={{fontSize: '24px'}}>📋</span>
             <span>Atchalta Task Manager</span>
           </div>
-          <button className="plans-btn">
-            See plans
-          </button>
         </div>
 
         <Nav />
