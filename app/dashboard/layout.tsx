@@ -6,6 +6,7 @@ import { Nav } from "@/components/dashboard/nav";
 import { UserNav } from "@/components/dashboard/user-nav";
 import { UndoProvider } from "@/contexts/undo-context";
 import { UndoToast } from "@/components/tasks/undo-toast";
+import { HeaderIcons } from "@/components/dashboard/header-icons";
 
 export default async function DashboardLayout({
   children,
@@ -72,27 +73,7 @@ export default async function DashboardLayout({
         {/* Main Content */}
         <div className="main-content">
           <div className="main-header">
-            <div className="header-icons">
-              <i 
-                style={{position: 'relative', cursor: 'pointer'}} 
-                onClick={() => alert('Notifications feature coming soon!')}
-              >
-                🔔
-                <span className="notification-badge">3</span>
-              </i>
-              <i 
-                style={{cursor: 'pointer'}} 
-                onClick={() => alert('Help feature coming soon!')}
-              >
-                ❓
-              </i>
-              <i 
-                style={{cursor: 'pointer'}} 
-                onClick={() => alert('Settings feature coming soon!')}
-              >
-                ⚙️
-              </i>
-            </div>
+            <HeaderIcons />
             <div className="user-profile">
               <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
                 <UserNav user={user} />
