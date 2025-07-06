@@ -118,8 +118,10 @@ export function TasksView({ tasks: initialTasks, view, projects, users }: TasksV
 
       {/* Add Task Row */}
       <Link href="/dashboard/tasks/new" className="add-task" style={{ textDecoration: 'none' }}>
-        <i>➕</i>
-        <span>Add new task</span>
+        <div>
+          <i>➕</i>
+          <span>Add new task</span>
+        </div>
       </Link>
 
       {/* No tasks message */}
