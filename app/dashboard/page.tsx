@@ -4,19 +4,23 @@ import { getTasks } from "@/lib/database/tasks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
-import { STATUS_LABELS, Task } from "@/lib/types";
+import { Task } from "@/lib/types";
+import { 
+  getTaskStatusCounts, 
+  isTaskOverdue,
+  getStatusLabel,
+  getStatusColor 
+} from "@/lib/utils/status-system";
 
 // A small, local component for rendering the status badge consistently
 function StatusBadge({ status }: { status: Task['status'] }) {
-  const statusInfo = {
-    urgent: { label: "Urgent", color: "var(--urgent-red)" },
-    priority_2: { label: "Priority 2", color: "#f59e0b" },
-    priority_3: { label: "Priority 3", color: "#3b82f6" },
-    done: { label: "Done", color: "#037f4c" },
+  const statusColors = {
+    urgent: 'var(--urgent-red)',
+    priority_2: '#f59e0b',
+    priority_3: '#3b82f6',
+    done: '#037f4c'
   };
-
-  const currentStatus = statusInfo[status] || { label: 'Unknown', color: '#888' };
-
+  
   return (
     <span style={{
       display: 'inline-flex',
@@ -26,9 +30,9 @@ function StatusBadge({ status }: { status: Task['status'] }) {
       fontSize: '13px',
       fontWeight: '500',
       color: 'white',
-      backgroundColor: currentStatus.color,
+      backgroundColor: statusColors[status] || '#888',
     }}>
-      {currentStatus.label}
+      {getStatusLabel(status)}
     </span>
   );
 }
@@ -41,14 +45,9 @@ async function DashboardStats() {
 
   const { tasks } = tasksResult;
   
-  // Calculate stats based on the new status system
-  const urgentTasks = tasks.filter(task => task.status === 'urgent').length;
-  const p2Tasks = tasks.filter(task => task.status === 'priority_2').length;
-  const p3Tasks = tasks.filter(task => task.status === 'priority_3').length;
-
-  const overdueTasks = tasks.filter(task => 
-    task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
-  ).length;
+  // Calculate stats using the new utility functions
+  const statusCounts = getTaskStatusCounts(tasks, 'custom');
+  const overdueTasks = tasks.filter(isTaskOverdue).length;
   
   // Recent tasks (last 3)
   const recentTasks = tasks
@@ -63,7 +62,10 @@ async function DashboardStats() {
         </div>
       </div>
 
-      <div className="grid gap-8 mb-8" style={{
+      <div style={{
+        display: 'grid',
+        gap: '20px',
+        marginBottom: '30px',
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
       }}>
         <Card style={{
@@ -80,15 +82,15 @@ async function DashboardStats() {
           <CardContent>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
               <span style={{color: 'var(--text-secondary)'}}>Urgent</span>
-              <span style={{color: 'var(--urgent-red)', fontWeight: '500'}}>{urgentTasks}</span>
+              <span style={{color: 'var(--urgent-red)', fontWeight: '500'}}>{statusCounts.urgent}</span>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
               <span style={{color: 'var(--text-secondary)'}}>Priority 2</span>
-              <span style={{color: '#f59e0b', fontWeight: '500'}}>{p2Tasks}</span>
+              <span style={{color: '#f59e0b', fontWeight: '500'}}>{statusCounts.priority_2}</span>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
               <span style={{color: 'var(--text-secondary)'}}>Priority 3</span>
-              <span style={{color: '#3b82f6', fontWeight: '500'}}>{p3Tasks}</span>
+              <span style={{color: '#3b82f6', fontWeight: '500'}}>{statusCounts.priority_3}</span>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
               <span style={{color: 'var(--text-secondary)'}}>Overdue</span>
@@ -242,7 +244,7 @@ async function DashboardStats() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <DashboardStats />
     </Suspense>
   );

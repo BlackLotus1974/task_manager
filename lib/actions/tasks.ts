@@ -2,11 +2,22 @@
 
 import { createTask, updateTask, deleteTask, getTaskById } from "@/lib/database/tasks";
 import { revalidatePath } from "next/cache";
+import { 
+  CustomStatus, 
+  TraditionalStatus, 
+  PriorityLevel,
+  isCustomStatus,
+  isTraditionalStatus,
+  isPriorityLevel
+} from "@/lib/types";
 
 export async function createTaskAction(formData: {
   title: string;
   description?: string;
-  status?: 'urgent' | 'priority_2' | 'priority_3' | 'done';
+  status?: CustomStatus;
+  traditional_status?: TraditionalStatus;
+  priority?: PriorityLevel;
+  priority_level?: PriorityLevel;
   due_date?: string;
   project_id?: string;
   assignee_ids?: string[];
@@ -26,15 +37,20 @@ export async function updateTaskAction(
   formData: {
     title?: string;
     description?: string;
-    status?: "urgent" | "priority_2" | "priority_3" | "done";
-    priority?: 1 | 2 | 3 | 4;
+    status?: CustomStatus;
+    traditional_status?: TraditionalStatus;
+    priority?: PriorityLevel;
+    priority_level?: PriorityLevel;
     due_date?: string;
     project_id?: string;
   }
 ) {
   try {
-    // If status is being set to "done", delete the task instead
-    if (formData.status === 'done') {
+    // Handle "done" status in both systems
+    const isDoneCustom = formData.status === 'done';
+    const isDoneTraditional = formData.traditional_status === 'done';
+    
+    if (isDoneCustom || isDoneTraditional) {
       await deleteTask(taskId);
       revalidatePath("/dashboard/tasks");
       return { success: true, deleted: true };
@@ -67,5 +83,51 @@ export async function getTaskAction(taskId: string) {
   } catch (error) {
     console.error("Failed to get task:", error);
     return { success: false, error: "Failed to get task" };
+  }
+}
+
+// New action for traditional status system compatibility
+export async function updateTaskStatusAction(
+  taskId: string,
+  status: TraditionalStatus,
+  priority?: PriorityLevel
+) {
+  try {
+    if (status === 'done') {
+      await deleteTask(taskId);
+      revalidatePath("/dashboard/tasks");
+      return { success: true, deleted: true };
+    }
+    
+    const task = await updateTask(taskId, {
+      traditional_status: status,
+      priority_level: priority
+    });
+    revalidatePath("/dashboard/tasks");
+    return { success: true, task };
+  } catch (error: any) {
+    console.error("Failed to update task status:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// New action for custom status system compatibility
+export async function updateTaskCustomStatusAction(
+  taskId: string,
+  status: CustomStatus
+) {
+  try {
+    if (status === 'done') {
+      await deleteTask(taskId);
+      revalidatePath("/dashboard/tasks");
+      return { success: true, deleted: true };
+    }
+    
+    const task = await updateTask(taskId, { status });
+    revalidatePath("/dashboard/tasks");
+    return { success: true, task };
+  } catch (error: any) {
+    console.error("Failed to update task custom status:", error);
+    return { success: false, error: error.message };
   }
 } 

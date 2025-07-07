@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { updateTaskAction } from "@/lib/actions/tasks";
-import { STATUS_LABELS } from "@/lib/types";
-import { Task } from "@/lib/types";
+import { updateTaskCustomStatusAction } from "@/lib/actions/tasks";
+import { Task, CustomStatus } from "@/lib/types";
 import { useUndo } from "@/contexts/undo-context";
+import { getStatusLabel, getStatusOptions } from "@/lib/utils/status-system";
 
 interface InlineStatusEditorProps {
   task: Task;
@@ -16,23 +16,19 @@ export function InlineStatusEditor({ task, onStatusChange }: InlineStatusEditorP
   const [isUpdating, setIsUpdating] = useState(false);
   const { addUndoAction } = useUndo();
 
-  const statusOptions: Array<{ value: Task['status']; label: string; color: string }> = [
-    { value: 'urgent', label: 'Urgent', color: 'var(--urgent-red)' },
-    { value: 'priority_2', label: 'Priority 2', color: '#f59e0b' },
-    { value: 'priority_3', label: 'Priority 3', color: '#3b82f6' },
-    { value: 'done', label: 'Done', color: '#037f4c' }
-  ];
+  // Get status options using the utility function
+  const statusOptions = getStatusOptions('custom');
 
   const currentStatus = statusOptions.find(option => option.value === task.status);
 
-  const handleStatusChange = async (newStatus: Task['status']) => {
+  const handleStatusChange = async (newStatus: CustomStatus) => {
     setIsUpdating(true);
     setIsEditing(false);
 
     const previousState = { status: task.status };
 
     try {
-      const result = await updateTaskAction(task.id, { status: newStatus });
+      const result = await updateTaskCustomStatusAction(task.id, newStatus);
       
       if (result.success) {
         if (result.deleted) {
@@ -54,7 +50,17 @@ export function InlineStatusEditor({ task, onStatusChange }: InlineStatusEditorP
 
   if (isUpdating) {
     return (
-      <div className="status" style={{ backgroundColor: currentStatus?.color, opacity: 0.6 }}>
+      <div className="status" style={{ 
+        backgroundColor: currentStatus?.color || '#888', 
+        opacity: 0.6,
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '4px 12px',
+        borderRadius: '20px',
+        fontSize: '13px',
+        fontWeight: '500',
+        color: 'white'
+      }}>
         Updating...
       </div>
     );
@@ -65,7 +71,7 @@ export function InlineStatusEditor({ task, onStatusChange }: InlineStatusEditorP
       <div className="status-editor" style={{ position: 'relative' }}>
         <select
           value={task.status}
-          onChange={(e) => handleStatusChange(e.target.value as Task['status'])}
+          onChange={(e) => handleStatusChange(e.target.value as CustomStatus)}
           onBlur={() => setIsEditing(false)}
           autoFocus
           style={{
@@ -100,12 +106,12 @@ export function InlineStatusEditor({ task, onStatusChange }: InlineStatusEditorP
         fontSize: '13px',
         fontWeight: '500',
         color: 'white',
-        backgroundColor: currentStatus?.color,
+        backgroundColor: currentStatus?.color || '#888',
         cursor: 'pointer'
       }}
       title="Click to change status"
     >
-      {currentStatus?.label || STATUS_LABELS[task.status]}
+      {getStatusLabel(task.status)}
     </div>
   );
 } 

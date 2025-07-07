@@ -1,18 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { Task, STATUS_COLORS } from "@/lib/types";
+import { Task } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User, MessageSquare, Paperclip } from "lucide-react";
 import { format } from "date-fns";
+import { InlineStatusEditor } from "./inline-status-editor";
+import { InlineDateEditor } from "./inline-date-editor";
+import { getStatusColor } from "@/lib/utils/status-system";
 
 interface TaskCardProps {
   task: Task;
+  onStatusChange?: (taskId: string, deleted: boolean) => void;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, onStatusChange }: TaskCardProps) {
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done';
+
+  const handleStatusChange = (taskId: string, deleted: boolean) => {
+    onStatusChange?.(taskId, deleted);
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -25,12 +33,7 @@ export function TaskCard({ task }: TaskCardProps) {
             {task.title}
           </Link>
           <div className="flex items-center space-x-1 ml-2">
-            <Badge
-              variant="secondary"
-              className={`text-xs ${STATUS_COLORS[task.status]}`}
-            >
-              {task.status.replace('_', ' ')}
-            </Badge>
+            <InlineStatusEditor task={task} onStatusChange={handleStatusChange} />
           </div>
         </div>
       </CardHeader>
@@ -47,7 +50,14 @@ export function TaskCard({ task }: TaskCardProps) {
             {task.due_date && (
               <div className={`flex items-center space-x-1 ${isOverdue ? 'text-red-600' : ''}`}>
                 <Calendar className="h-3 w-3" />
-                <span>{format(new Date(task.due_date), 'MMM d')}</span>
+                <InlineDateEditor task={task} />
+              </div>
+            )}
+            
+            {!task.due_date && (
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-3 w-3" />
+                <InlineDateEditor task={task} />
               </div>
             )}
             

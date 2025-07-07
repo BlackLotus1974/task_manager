@@ -26,10 +26,12 @@ export function UndoToast() {
           await createTaskAction({
             title: lastAction.task.title,
             description: lastAction.task.description,
-            priority: lastAction.task.priority,
+            status: lastAction.task.status,
+            traditional_status: lastAction.task.traditional_status,
+            priority_level: lastAction.task.priority_level,
             due_date: lastAction.task.due_date,
             project_id: lastAction.task.project_id,
-            status: lastAction.task.status,
+            assignee_ids: lastAction.task.assignees?.map(a => a.id) || [],
           });
           break;
         case 'update':

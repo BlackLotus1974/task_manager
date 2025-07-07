@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, User, STATUS_LABELS, Task } from "@/lib/types";
+import { Project, User, Task, CustomStatus } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 import { useUndo } from "@/contexts/undo-context";
+import { getStatusOptions } from "@/lib/utils/status-system";
 
 interface CreateTaskFormProps {
   projects: Project[];
@@ -26,11 +27,14 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    status: "priority_3" as Task['status'],
+    status: "priority_3" as CustomStatus,
     due_date: "",
     project_id: "",
     assignee_ids: [] as string[],
   });
+
+  // Get status options using the utility function
+  const statusOptions = getStatusOptions('custom');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,11 +118,11 @@ export function CreateTaskForm({ projects, users }: CreateTaskFormProps) {
                 <select
                   id="status"
                   value={formData.status}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, status: e.target.value as Task['status'] }))}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, status: e.target.value as CustomStatus }))}
                 >
-                  {Object.entries(STATUS_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>

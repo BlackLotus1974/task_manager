@@ -4,7 +4,12 @@ import {
   CreateTaskData, 
   UpdateTaskData, 
   TaskFilters, 
-  TaskSort 
+  TaskSort,
+  customStatusToTraditional,
+  traditionalToCustomStatus,
+  isCustomStatus,
+  isTraditionalStatus,
+  isPriorityLevel
 } from '@/lib/types';
 
 export async function getTasks(
@@ -30,16 +35,22 @@ export async function getTasks(
       attachments(count)
     `, { count: 'exact' });
 
-  // Apply filters
+  // Apply filters - support both status systems
   if (filters?.status) {
     query = query.eq('status', filters.status);
+  } else if (filters?.traditional_status) {
+    query = query.eq('traditional_status', filters.traditional_status);
   } else {
     // By default, filter out "done" tasks unless explicitly requested
-    query = query.neq('status', 'done');
+    query = query.neq('status', 'done').neq('traditional_status', 'done');
   }
   
+  // Support both priority systems
   if (filters?.priority) {
+    // Legacy priority field (deprecated but still supported)
     query = query.eq('priority', filters.priority);
+  } else if (filters?.priority_level) {
+    query = query.eq('priority_level', filters.priority_level);
   }
   
   if (filters?.project) {
@@ -110,9 +121,11 @@ export async function getTasks(
     }
   }
   
-  // Apply sorting
+  // Apply sorting - support both priority systems
   if (sort) {
-    query = query.order(sort.field, { ascending: sort.direction === 'asc' });
+    // Map legacy priority field to priority_level for sorting
+    const sortField = sort.field === 'priority' ? 'priority_level' : sort.field;
+    query = query.order(sortField, { ascending: sort.direction === 'asc' });
   } else {
     query = query.order('created_at', { ascending: false });
   }
@@ -182,6 +195,36 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
     throw new Error('User not authenticated');
   }
   
+  // Handle dual status system
+  let statusData: {
+    status?: string;
+    traditional_status?: string;
+    priority_level?: number;
+  } = {};
+  
+  if (taskData.status && isCustomStatus(taskData.status)) {
+    // Custom status system (current master)
+    statusData.status = taskData.status;
+    // Auto-sync to traditional system
+    const traditional = customStatusToTraditional(taskData.status);
+    statusData.traditional_status = traditional.status;
+    statusData.priority_level = traditional.priority;
+  } else if (taskData.traditional_status && isTraditionalStatus(taskData.traditional_status)) {
+    // Traditional status system (new-ui-design)
+    statusData.traditional_status = taskData.traditional_status;
+    const priorityLevel = taskData.priority_level || taskData.priority || 2;
+    statusData.priority_level = isPriorityLevel(priorityLevel) ? priorityLevel : 2;
+    // Auto-sync to custom system
+    statusData.status = traditionalToCustomStatus(taskData.traditional_status, statusData.priority_level as import('@/lib/types').PriorityLevel);
+  } else {
+    // Default to custom system
+    const defaultStatus = taskData.status || 'priority_3';
+    statusData.status = isCustomStatus(defaultStatus) ? defaultStatus : 'priority_3';
+    const traditional = customStatusToTraditional(statusData.status as import('@/lib/types').CustomStatus);
+    statusData.traditional_status = traditional.status;
+    statusData.priority_level = traditional.priority;
+  }
+  
   // Create the task
   const { data: task, error: taskError } = await supabase
     .from('tasks')
@@ -191,7 +234,7 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
       due_date: taskData.due_date,
       project_id: taskData.project_id,
       created_by: user.id,
-      status: taskData.status,
+      ...statusData,
     })
     .select()
     .single();
@@ -260,16 +303,51 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
     throw new Error('Task not found');
   }
   
+  // Handle dual status system for updates
+  let statusUpdates: {
+    status?: string;
+    traditional_status?: string;
+    priority_level?: number;
+  } = {};
+  
+  if (updates.status && isCustomStatus(updates.status)) {
+    // Custom status system update
+    statusUpdates.status = updates.status;
+    // Auto-sync to traditional system
+    const traditional = customStatusToTraditional(updates.status);
+    statusUpdates.traditional_status = traditional.status;
+    statusUpdates.priority_level = traditional.priority;
+  } else if (updates.traditional_status && isTraditionalStatus(updates.traditional_status)) {
+    // Traditional status system update
+    statusUpdates.traditional_status = updates.traditional_status;
+    const priorityLevel = updates.priority_level || updates.priority || currentTask.priority_level || 2;
+    statusUpdates.priority_level = isPriorityLevel(priorityLevel) ? priorityLevel : 2;
+    // Auto-sync to custom system
+    statusUpdates.status = traditionalToCustomStatus(updates.traditional_status, statusUpdates.priority_level as import('@/lib/types').PriorityLevel);
+  } else if (updates.priority_level && isPriorityLevel(updates.priority_level)) {
+    // Priority level update only - sync both systems
+    statusUpdates.priority_level = updates.priority_level;
+    if (currentTask.traditional_status) {
+      statusUpdates.status = traditionalToCustomStatus(currentTask.traditional_status, updates.priority_level);
+    }
+  } else if (updates.priority && isPriorityLevel(updates.priority)) {
+    // Legacy priority field update
+    statusUpdates.priority_level = updates.priority;
+    if (currentTask.traditional_status) {
+      statusUpdates.status = traditionalToCustomStatus(currentTask.traditional_status, updates.priority);
+    }
+  }
+
   // Update the task
   const { error: taskError } = await supabase
     .from('tasks')
     .update({
       title: updates.title,
       description: updates.description,
-      status: updates.status,
       due_date: updates.due_date,
       project_id: updates.project_id,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      ...statusUpdates
     })
     .eq('id', id)
     .select()
