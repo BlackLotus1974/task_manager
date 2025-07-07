@@ -190,7 +190,7 @@ export function getTaskUrgency(task: Task | TraditionalTask): number {
     urgencyScore += priority * 10;
   } else {
     // TraditionalTask interface
-    urgencyScore += task.priority * 10;
+    urgencyScore += (task.priority || 2) * 10;
   }
   
   // Add urgency for overdue tasks
@@ -226,6 +226,44 @@ export function sortTasksByUrgency(
 }
 
 /**
+ * Filter tasks by custom status
+ */
+export function filterTasksByCustomStatus(
+  tasks: (Task | TraditionalTask)[],
+  status: CustomStatus
+): (Task | TraditionalTask)[] {
+  return tasks.filter(task => {
+    if ('traditional_status' in task) {
+      // Task interface
+      return task.status === status;
+    } else {
+      // TraditionalTask - convert to custom status
+      const customStatus = traditionalToCustomStatus(task.status, task.priority || 2);
+      return customStatus === status;
+    }
+  });
+}
+
+/**
+ * Filter tasks by traditional status
+ */
+export function filterTasksByTraditionalStatus(
+  tasks: (Task | TraditionalTask)[],
+  status: TraditionalStatus
+): (Task | TraditionalTask)[] {
+  return tasks.filter(task => {
+    if ('traditional_status' in task) {
+      // Task interface - use traditional_status or convert
+      const traditionalStatus = task.traditional_status || customStatusToTraditional(task.status).status;
+      return traditionalStatus === status;
+    } else {
+      // TraditionalTask interface
+      return task.status === status;
+    }
+  });
+}
+
+/**
  * Filter tasks by status (works with both systems)
  */
 export function filterTasksByStatus(
@@ -233,27 +271,12 @@ export function filterTasksByStatus(
   status: CustomStatus | TraditionalStatus,
   mode: StatusSystemMode = 'custom'
 ): (Task | TraditionalTask)[] {
-  return tasks.filter(task => {
-    if (mode === 'custom') {
-      if ('traditional_status' in task) {
-        // Task interface
-        return task.status === status;
-      } else {
-        // TraditionalTask - convert to custom status
-        const customStatus = traditionalToCustomStatus(task.status, task.priority);
-        return customStatus === status;
-      }
-    } else {
-      if ('traditional_status' in task) {
-        // Task interface - use traditional_status or convert
-        const traditionalStatus = task.traditional_status || customStatusToTraditional(task.status).status;
-        return traditionalStatus === status;
-      } else {
-        // TraditionalTask interface
-        return task.status === status;
-      }
-    }
-  });
+  if (mode === 'custom' && isCustomStatus(status)) {
+    return filterTasksByCustomStatus(tasks, status);
+  } else if (mode === 'traditional' && isTraditionalStatus(status)) {
+    return filterTasksByTraditionalStatus(tasks, status);
+  }
+  return [];
 }
 
 /**
