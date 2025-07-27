@@ -13,6 +13,8 @@ interface TaskRowProps {
 }
 
 export function TaskRow({ task, onStatusChange, projects, users, color }: TaskRowProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _users = users;
   return (
     <div key={task.id} className="task-row">
       <div className="task-grid task-grid-layout">

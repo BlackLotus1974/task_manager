@@ -5,10 +5,7 @@ import { revalidatePath } from "next/cache";
 import { 
   CustomStatus, 
   TraditionalStatus, 
-  PriorityLevel,
-  isCustomStatus,
-  isTraditionalStatus,
-  isPriorityLevel
+  PriorityLevel
 } from "@/lib/types";
 
 export async function createTaskAction(formData: {
@@ -59,9 +56,9 @@ export async function updateTaskAction(
     const task = await updateTask(taskId, formData);
     revalidatePath("/dashboard/tasks");
     return { success: true, task };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to update task:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update task" };
   }
 }
 
@@ -105,9 +102,9 @@ export async function updateTaskStatusAction(
     });
     revalidatePath("/dashboard/tasks");
     return { success: true, task };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to update task status:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update task status" };
   }
 }
 
@@ -126,8 +123,8 @@ export async function updateTaskCustomStatusAction(
     const task = await updateTask(taskId, { status });
     revalidatePath("/dashboard/tasks");
     return { success: true, task };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to update task custom status:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update task custom status" };
   }
 } 

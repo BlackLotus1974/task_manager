@@ -12,6 +12,10 @@ interface TaskBoardProps {
 }
 
 export function TaskBoard({ tasks: initialTasks, projects, users }: TaskBoardProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _projects = projects;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _users = users;
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   const handleStatusChange = (taskId: string, deleted: boolean) => {

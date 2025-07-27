@@ -23,8 +23,7 @@ import {
   taskToTraditional,
   traditionalTaskToTask,
   isCustomStatus,
-  isTraditionalStatus,
-  isPriorityLevel
+  isTraditionalStatus
 } from '@/lib/types';
 
 /**
@@ -238,8 +237,11 @@ export function filterTasksByCustomStatus(
       return task.status === status;
     } else {
       // TraditionalTask - convert to custom status
-      const customStatus = traditionalToCustomStatus(task.status, task.priority || 2);
-      return customStatus === status;
+      if (isTraditionalStatus(task.status)) {
+        const customStatus = traditionalToCustomStatus(task.status, task.priority || 2);
+        return customStatus === status;
+      }
+      return false;
     }
   });
 }

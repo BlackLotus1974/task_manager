@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
 export function UndoToast() {
-  const { undoStack, addUndoAction, executeUndo } = useUndo();
+  const { undoStack } = useUndo();
   const [isUndoing, setIsUndoing] = useState(false);
   const router = useRouter();
 
@@ -42,7 +42,7 @@ export function UndoToast() {
       }
       // This is a bit of a hack to remove the last action.
       // A proper implementation would have a `removeUndoAction` in the context.
-      (undoStack as any[]).pop();
+      (undoStack as unknown[]).pop();
       router.refresh();
     } catch (error) {
       console.error('Failed to undo action:', error);

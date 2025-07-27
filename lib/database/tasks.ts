@@ -196,7 +196,7 @@ export async function createTask(taskData: CreateTaskData): Promise<Task> {
   }
   
   // Handle dual status system
-  let statusData: {
+  const statusData: {
     status?: string;
     traditional_status?: string;
     priority_level?: number;
@@ -304,7 +304,7 @@ export async function updateTask(id: string, updates: UpdateTaskData): Promise<T
   }
   
   // Handle dual status system for updates
-  let statusUpdates: {
+  const statusUpdates: {
     status?: string;
     traditional_status?: string;
     priority_level?: number;

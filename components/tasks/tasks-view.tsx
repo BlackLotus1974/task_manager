@@ -2,9 +2,6 @@
 
 import { Task, Project, User } from "@/lib/types";
 import { TaskBoard } from "./task-board";
-import { formatDate } from "@/lib/utils";
-import { InlineStatusEditor } from "./inline-status-editor";
-import { InlineDateEditor } from "./inline-date-editor";
 import { useState } from "react";
 import Link from "next/link";
 import { TaskRow } from "./task-row";

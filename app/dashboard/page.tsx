@@ -8,8 +8,7 @@ import { Task } from "@/lib/types";
 import { 
   getTaskStatusCounts, 
   isTaskOverdue,
-  getStatusLabel,
-  getStatusColor 
+  getStatusLabel
 } from "@/lib/utils/status-system";
 
 // A small, local component for rendering the status badge consistently

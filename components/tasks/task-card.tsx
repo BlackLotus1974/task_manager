@@ -5,10 +5,8 @@ import { Task } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User, MessageSquare, Paperclip } from "lucide-react";
-import { format } from "date-fns";
 import { InlineStatusEditor } from "./inline-status-editor";
 import { InlineDateEditor } from "./inline-date-editor";
-import { getStatusColor } from "@/lib/utils/status-system";
 
 interface TaskCardProps {
   task: Task;

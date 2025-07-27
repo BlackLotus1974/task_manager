@@ -12,20 +12,21 @@ import { CreateTaskButton } from "@/components/tasks/create-task-button";
 import { TaskFilters as TaskFiltersType } from "@/lib/types";
 
 interface TasksPageProps {
-  searchParams: {
+  searchParams: Promise<{
     view?: 'list' | 'board';
     status?: string;
     assignee?: string;
     project?: string;
-  };
+  }>;
 }
 
 export default async function TasksPage({ searchParams }: TasksPageProps) {
   cookies(); // Opt into dynamic rendering to fix searchParams error
+  const resolvedSearchParams = await searchParams;
   const filters: TaskFiltersType = {
-    status: searchParams.status === 'done' ? 'done' : undefined,
-    project: searchParams.project,
-    assignee: searchParams.assignee,
+    status: resolvedSearchParams.status === 'done' ? 'done' : undefined,
+    project: resolvedSearchParams.project,
+    assignee: resolvedSearchParams.assignee,
   };
 
   const [tasksResult, projects, users] = await Promise.all([
@@ -36,7 +37,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   const { tasks } = tasksResult;
   
-  const view = searchParams.view || 'list';
+  const view = resolvedSearchParams.view || 'list';
 
   return (
     <Suspense fallback={<div style={{color: 'var(--text-secondary)'}}>Loading tasks...</div>}>

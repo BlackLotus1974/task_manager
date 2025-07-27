@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Project, User, Task, CustomStatus } from "@/lib/types";
+import { Project, User, CustomStatus } from "@/lib/types";
 import { createTaskAction } from "@/lib/actions/tasks";
 import { useUndo } from "@/contexts/undo-context";
 import { getStatusOptions } from "@/lib/utils/status-system";
